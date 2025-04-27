@@ -107,7 +107,13 @@
               "format": "int32",
               "description": "Difficulty level of the challenge"
             }
-          }
+          },
+          "required": [
+            "challenge",
+            "token",
+            "userId",
+            "difficulty"
+          ]
         },
         "SolveFirstChallengeRequest": {
           "type": "object",
@@ -160,7 +166,12 @@
               "format": "int32",
               "description": "Difficulty level of the solved challenge"
             }
-          }
+          },
+          "required": [
+            "userId",
+            "challenge",
+            "difficulty"
+          ]
         },
         "RegisterUserRequest": {
           "type": "object",
@@ -201,11 +212,12 @@
           },
           "required": [
             "userId",
-            "challenge",
+            "challenge", 
             "solution",
             "nickname",
             "publicKey",
-            "difficulty"
+            "difficulty",
+            "tags"
           ]
         },
         "RegisterUserResponse": {
@@ -224,7 +236,12 @@
               "type": "string",
               "description": "Additional information about the registration result"
             }
-          }
+          },
+          "required": [
+            "userId",
+            "success",
+            "message"
+          ]
         }
       }
     }

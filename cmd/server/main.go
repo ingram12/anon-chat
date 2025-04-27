@@ -1,53 +1,29 @@
 package main
 
 import (
-	"anon-chat-backend/api/proto"
+	"anon-chat-backend/internal/api"
 	"anon-chat-backend/internal/config"
-	"anon-chat-backend/internal/users"
-	"log"
-	"net"
+	"anon-chat-backend/internal/handlers"
 	"net/http"
 
-	"github.com/improbable-eng/grpc-web/go/grpcweb"
-	"google.golang.org/grpc"
+	"github.com/labstack/echo/v4"
 )
 
 func main() {
-	cfg := config.NewConfig()
+	configuration := config.NewConfig()
+	userService := handlers.NewUserService(configuration)
 
-	// Create gRPC server
-	grpcServer := grpc.NewServer()
-	userServer := users.NewGRPCServer(cfg)
-	proto.RegisterUserServiceServer(grpcServer, userServer)
+	e := echo.New()
+	api.RegisterHandlers(e, userService)
 
-	// Wrap gRPC server with gRPC-web
-	wrappedGrpc := grpcweb.WrapServer(grpcServer)
+	// Добавляем роут для отдачи swagger.json
+	e.GET("/swagger.json", func(c echo.Context) error {
+		swagger, err := api.GetSwagger()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+		return c.JSON(http.StatusOK, swagger)
+	})
 
-	// Create HTTP server with CORS support
-	httpServer := &http.Server{
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Set CORS headers
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, x-grpc-web")
-
-			if r.Method == "OPTIONS" {
-				w.WriteHeader(http.StatusOK)
-				return
-			}
-
-			wrappedGrpc.ServeHTTP(w, r)
-		}),
-	}
-
-	// Start server
-	listener, err := net.Listen("tcp", ":50051")
-	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
-	}
-
-	log.Println("Server starting on :50051")
-	if err := httpServer.Serve(listener); err != nil {
-		log.Fatalf("Server failed to start: %v", err)
-	}
+	e.Logger.Fatal(e.Start(":8080"))
 }
