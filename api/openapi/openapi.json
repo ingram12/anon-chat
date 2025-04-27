@@ -1,0 +1,232 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+      "title": "Anon Chat API",
+      "version": "1.0.0",
+      "description": "API for anonymous chat application with challenge-based authentication"
+    },
+    "paths": {
+      "/challenge/first": {
+        "get": {
+          "summary": "Get First Challenge",
+          "description": "Retrieves the initial challenge for user authentication. This challenge must be solved before registration.",
+          "operationId": "GetFirstChallenge",
+          "responses": {
+            "200": {
+              "description": "Successful response containing the challenge details",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/GetFirstChallengeResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/challenge/solve": {
+        "post": {
+          "summary": "Solve First Challenge",
+          "description": "Submit solution for the first challenge. This step is required before user registration.",
+          "operationId": "SolveFirstChallenge",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SolveFirstChallengeRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful challenge solution verification",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SolveFirstChallengeResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/users/register": {
+        "post": {
+          "summary": "Register New User",
+          "description": "Register a new user in the system. Requires successful completion of the first challenge.",
+          "operationId": "RegisterUser",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterUserRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "User registration result",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/RegisterUserResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "GetFirstChallengeResponse": {
+          "type": "object",
+          "description": "Response containing the first challenge details",
+          "properties": {
+            "challenge": {
+              "type": "string",
+              "description": "The challenge string that needs to be solved"
+            },
+            "token": {
+              "type": "string",
+              "description": "Temporary token for challenge verification"
+            },
+            "userId": {
+              "type": "string",
+              "description": "Temporary user ID for the challenge session"
+            },
+            "difficulty": {
+              "type": "integer",
+              "format": "int32",
+              "description": "Difficulty level of the challenge"
+            }
+          }
+        },
+        "SolveFirstChallengeRequest": {
+          "type": "object",
+          "description": "Request to solve the first challenge",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "description": "Temporary user ID received from the challenge"
+            },
+            "challenge": {
+              "type": "string",
+              "description": "The challenge string that was received"
+            },
+            "solution": {
+              "type": "string",
+              "description": "The solution to the challenge"
+            },
+            "token": {
+              "type": "string",
+              "description": "Temporary token received from the challenge"
+            },
+            "difficulty": {
+              "type": "integer",
+              "format": "int32",
+              "description": "Difficulty level of the challenge"
+            }
+          },
+          "required": [
+            "userId",
+            "challenge",
+            "solution",
+            "token",
+            "difficulty"
+          ]
+        },
+        "SolveFirstChallengeResponse": {
+          "type": "object",
+          "description": "Response after successful challenge solution",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "description": "Verified user ID for registration"
+            },
+            "challenge": {
+              "type": "string",
+              "description": "The solved challenge string"
+            },
+            "difficulty": {
+              "type": "integer",
+              "format": "int32",
+              "description": "Difficulty level of the solved challenge"
+            }
+          }
+        },
+        "RegisterUserRequest": {
+          "type": "object",
+          "description": "Request to register a new user",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "description": "Verified user ID from challenge solution"
+            },
+            "challenge": {
+              "type": "string",
+              "description": "The solved challenge string"
+            },
+            "solution": {
+              "type": "string",
+              "description": "The solution to the challenge"
+            },
+            "nickname": {
+              "type": "string",
+              "description": "User's chosen display name"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "description": "User's interest tags",
+                "type": "string"
+              }
+            },
+            "publicKey": {
+              "type": "string",
+              "description": "User's public key for secure communication"
+            },
+            "difficulty": {
+              "type": "integer",
+              "format": "int32",
+              "description": "Difficulty level of the solved challenge"
+            }
+          },
+          "required": [
+            "userId",
+            "challenge",
+            "solution",
+            "nickname",
+            "publicKey",
+            "difficulty"
+          ]
+        },
+        "RegisterUserResponse": {
+          "type": "object",
+          "description": "Response after user registration attempt",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "description": "Registered user ID"
+            },
+            "success": {
+              "type": "boolean",
+              "description": "Whether the registration was successful"
+            },
+            "message": {
+              "type": "string",
+              "description": "Additional information about the registration result"
+            }
+          }
+        }
+      }
+    }
+  }
+  

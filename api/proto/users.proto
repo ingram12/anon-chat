@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package users;
+
+option go_package = "anon-chat-backend/api/proto";
+
+service UserService {
+  rpc GetFirstChallenge(GetFirstChallengeRequest) returns (GetFirstChallengeResponse) {}
+  rpc SolveFirstChallenge(SolveFirstChallengeRequest) returns (SolveFirstChallengeResponse) {}
+  rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse) {}
+}
+
+message GetFirstChallengeRequest {}
+
+message GetFirstChallengeResponse {
+  string challenge = 1;
+  string token = 2;
+  string userId = 3;
+  int32 difficulty = 4;
+}
+
+message SolveFirstChallengeRequest {
+  string userId = 1;
+  string challenge = 2;
+  string solution = 3;
+  string token = 4;
+  int32 difficulty = 5;
+}
+
+message SolveFirstChallengeResponse {
+  string userId = 1;
+  string challenge = 2;
+  int32 difficulty = 3;
+}
+
+message RegisterUserRequest {
+  string userId = 1;
+  string challenge = 2;
+  string solution = 3;
+  string nickname = 4;
+  repeated string tags = 5;
+  string publicKey = 6;
+  int32 difficulty = 7;
+}
+
+message RegisterUserResponse {
+  string userId = 1;
+  bool success = 2;
+  string message = 3;
+} 
