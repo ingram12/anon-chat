@@ -1,41 +1,33 @@
 <script>
   import { onMount } from 'svelte';
-  import { GetFirstChallengeRequest } from './proto/users';
-  import { UserServiceClient } from './proto/users.client';
   import { solveChallenge } from './lib/challenge';
-  import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
 
   let challenge = '';
+  let difficulty = 0;
   let token = '';
   let userId = '';
   let error = ''; 
   let solution = '';
-  const transport = new GrpcWebFetchTransport({
-    baseUrl: 'http://localhost:50051'
-  });
-  const client = new UserServiceClient(transport);
 
   async function getChallenge() {
     try {
-      const request = GetFirstChallengeRequest.create();
-      console.log('Sending request...');
-      
-      const { response } = await client.getFirstChallenge(request);
-      
-      console.log('Received response:', response);
-      
-      challenge = response.challenge;
-      token = response.token;
-      userId = response.userId;
-      solution = await solveChallenge(challenge, 3000);
+      const response = await fetch('http://localhost:8080/challenge/first');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      challenge = data.challenge;
+      token = data.token;
+      userId = data.userId;
+      difficulty = data.difficulty;
+
+      solution = await solveChallenge(challenge, 5000);
+
+      console.log(data);
       error = '';
-      console.log('Challenge:', challenge);
-      console.log('Solution:', solution);
-      console.log('Token:', token);
-      console.log('UserId:', userId);
-    } catch (err) {
-      error = 'Error connecting to server';
-      console.error('Error:', err);
+    } catch (e) {
+      error = `Failed to get challenge: ${e.message}`;
+      console.error('Error getting challenge:', e);
     }
   }
 

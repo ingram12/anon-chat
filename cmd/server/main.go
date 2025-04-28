@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -14,6 +15,14 @@ func main() {
 	userService := handlers.NewUserService(configuration)
 
 	e := echo.New()
+
+	// Add CORS middleware
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
+
 	api.RegisterHandlers(e, userService)
 
 	// Добавляем роут для отдачи swagger.json
