@@ -9,107 +9,72 @@ import (
 	"time"
 )
 
-const (
-	maxTokens = 100
-)
-
-type tokenInfo struct {
-	createdAt time.Time
-}
-
 type Storage struct {
 	mu            sync.RWMutex
-	tokens        map[string]tokenInfo
+	token         string
+	createdAt     time.Time
 	tokenLifetime time.Duration
 }
 
 var storage = &Storage{
-	tokens:        make(map[string]tokenInfo, maxTokens),
-	tokenLifetime: 30 * time.Second,
+	tokenLifetime: 120 * time.Second,
 }
 
 var (
-	ErrInvalidToken  = errors.New("invalid token")
-	ErrTokenNotFound = errors.New("token not found")
-	ErrTokenExpired  = errors.New("token expired")
-	ErrStorageFull   = errors.New("token storage is full, please try again later")
+	ErrInvalidToken = errors.New("invalid token")
+	ErrTokenExpired = errors.New("token expired")
 )
 
-// Token generation and verification
-func generateHMACToken(data, secretKey string) string {
-	h := hmac.New(sha256.New, []byte(secretKey))
+func generateHMACToken(data, secretKey, time string) string {
+	h := hmac.New(sha256.New, []byte(secretKey+time))
 	h.Write([]byte(data))
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-func verifyHMACToken(data, token, secretKey string) bool {
-	expectedToken := generateHMACToken(data, secretKey)
+func verifyHMACToken(data, token, secretKey, time string) bool {
+	expectedToken := generateHMACToken(data, secretKey, time)
 	return hmac.Equal([]byte(token), []byte(expectedToken))
 }
 
 // Storage management
-func (s *Storage) addToken(token string) error {
+func (s *Storage) getOrCreateToken(data, secretKey string) (string, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	// Cleanup expired tokens if storage is full
-	if len(s.tokens) >= maxTokens {
-		s.cleanupExpiredTokens()
+	// Check if the current token is still valid
+	println(s.token, s.tokenLifetime-time.Since(s.createdAt))
+	if s.token != "" && time.Since(s.createdAt) <= s.tokenLifetime {
+		return s.token, nil
 	}
 
-	// If still full, return error
-	if len(s.tokens) >= maxTokens {
-		return ErrStorageFull
-	}
+	// Generate a new token
+	s.createdAt = time.Now()
+	s.token = generateHMACToken(data, secretKey, s.createdAt.Format(time.RFC3339))
 
-	s.tokens[token] = tokenInfo{
-		createdAt: time.Now(),
-	}
-
-	return nil
+	return s.token, nil
 }
 
-func (s *Storage) cleanupExpiredTokens() {
-	now := time.Now()
-	for token, info := range s.tokens {
-		if now.Sub(info.createdAt) > s.tokenLifetime {
-			delete(s.tokens, token)
-		}
-	}
-}
+func (s *Storage) verifyToken(data, token, secretKey string) error {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 
-func (s *Storage) verifyAndRemoveToken(token string) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	info, exists := s.tokens[token]
-	if !exists {
-		return ErrTokenNotFound
-	}
-
-	if time.Since(info.createdAt) > s.tokenLifetime {
-		delete(s.tokens, token)
+	// Check if the token matches and is still valid
+	if s.token == "" || time.Since(s.createdAt) > s.tokenLifetime {
 		return ErrTokenExpired
 	}
 
-	// Remove token after successful verification
-	delete(s.tokens, token)
+	if !verifyHMACToken(data, token, secretKey, s.createdAt.Format(time.RFC3339)) {
+		return ErrInvalidToken
+	}
+
 	return nil
 }
 
 // Public API
 func GenerateToken(data, secretKey string) (string, error) {
-	token := generateHMACToken(data, secretKey)
-	if err := storage.addToken(token); err != nil {
-		return "", err
-	}
-	return token, nil
+	return storage.getOrCreateToken(data, secretKey)
 }
 
 func VerifyToken(data, token, secretKey string) error {
-	if !verifyHMACToken(data, token, secretKey) {
-		return ErrInvalidToken
-	}
-
-	return storage.verifyAndRemoveToken(token)
+	return storage.verifyToken(data, token, secretKey)
 }

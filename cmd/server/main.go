@@ -25,7 +25,7 @@ func main() {
 
 	api.RegisterHandlers(e, userService)
 
-	// Добавляем роут для отдачи swagger.json
+	// Add route to serve swagger.json
 	e.GET("/swagger.json", func(c echo.Context) error {
 		swagger, err := api.GetSwagger()
 		if err != nil {
