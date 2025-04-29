@@ -28,7 +28,7 @@
       userId = data.userId;
       difficulty = data.difficulty;
 
-      solution = await solveChallenge(challenge, 100); //TODO: difficulty should be dynamic
+      solution = await solveChallenge(challenge, 12); //TODO: difficulty should be dynamic
 
       console.log(data);
       error = '';

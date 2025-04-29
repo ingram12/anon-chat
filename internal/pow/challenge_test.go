@@ -14,23 +14,23 @@ func TestVerifySolution(t *testing.T) {
 	}{
 		{
 			name:       "valid solution 1",
-			challenge:  "1e37c85282826db71ae3fcc6307639073c2a985075604d2b2d1249ee51d9f674",
-			solution:   "41",
-			difficulty: 10,
+			challenge:  "16ed1c0d9a938dfe45e9c4feff8b44b6e6d42b911de47789a5c6ad8d707812cc",
+			solution:   "424117",
+			difficulty: 33,
 			want:       true,
 		},
 		{
 			name:       "valid solution 2",
-			challenge:  "d176f4ac9b0f38f706ae4628fa62f5350bd261d9344abfff04bbb49432725989",
-			solution:   "497",
-			difficulty: 4000,
+			challenge:  "513aea0b1a195d852da6838860e251c7c00843d89a0367cc9ad8c55f37da88e0",
+			solution:   "199903",
+			difficulty: 12,
 			want:       true,
 		},
 		{
 			name:       "invalid solution 1",
 			challenge:  "6c913a09dbb97b7091f923z04ff226x2983543584b10d65aa8b47d2e2c5v5d6c",
-			solution:   "7394",
-			difficulty: 48,
+			solution:   "735994",
+			difficulty: 11,
 			want:       false,
 		},
 	}

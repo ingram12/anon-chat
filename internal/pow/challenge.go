@@ -32,7 +32,7 @@ func GenerateChallenge(difficulty int) (Challenge, error) {
 func VerifySolution(challenge, nonce string, difficulty int) bool {
 	hash := []byte(challenge + nonce)
 
-	for i := 1; i < difficulty; i++ {
+	for i := 0; i < difficulty; i++ {
 		sum := sha256.Sum256(hash)
 		hash = sum[:]
 	}
