@@ -1,0 +1,12 @@
+ignoreGeneratedHeader = false
+
+[rule.blank-imports]
+[rule.context-as-first-argument]
+[rule.dot-imports]
+[rule.error-naming]
+[rule.exported]
+[rule.if-return]
+[rule.var-naming]
+  arguments = ["camelCase"]
+[rule.package-comments]
+[rule.indent-error-flow]

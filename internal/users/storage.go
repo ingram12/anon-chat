@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-	Id               string    `json:"user_id"`
+	ID               string    `json:"user_id"`
 	Nickname         string    `json:"nickname,omitempty"`
 	Tags             []string  `json:"tags,omitempty"`
 	PublicKey        string    `json:"public_key,omitempty"`
@@ -27,19 +27,19 @@ func NewUserStorage() *UserStorage {
 	}
 }
 
-func (s *UserStorage) CreateUser(userId string, challenge string, difficulty int) (*User, error) {
+func (s *UserStorage) CreateUser(userID string, challenge string, difficulty int) (*User, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	user := &User{
-		Id:               userId,
+		ID:               userID,
 		CurrentChallenge: challenge,
 		Difficulty:       difficulty,
 		CreatedAt:        time.Now(),
 		IsRegistered:     false,
 	}
 
-	s.users[userId] = user
+	s.users[userID] = user
 	return user, nil
 }
 
@@ -55,5 +55,5 @@ func (s *UserStorage) UpdateUser(user *User) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.users[user.Id] = user
+	s.users[user.ID] = user
 }

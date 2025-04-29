@@ -1,4 +1,4 @@
-module anon-chat-backend
+module anon-chat
 
 go 1.24.0
 

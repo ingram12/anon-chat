@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"anon-chat-backend/internal/api"
-	"anon-chat-backend/internal/config"
-	"anon-chat-backend/internal/pow"
-	"anon-chat-backend/internal/token"
-	"anon-chat-backend/internal/users"
+	"anon-chat/internal/api"
+	"anon-chat/internal/config"
+	"anon-chat/internal/pow"
+	"anon-chat/internal/token"
+	"anon-chat/internal/users"
 	"errors"
 	"net/http"
 
@@ -42,7 +42,7 @@ func SolveFirstChallenge(ctx echo.Context, config *config.Config, storage *users
 	}
 
 	resp := api.SolveFirstChallengeResponse{
-		UserId:     user.Id,
+		UserId:     user.ID,
 		Challenge:  user.CurrentChallenge,
 		Difficulty: int32(user.Difficulty),
 	}

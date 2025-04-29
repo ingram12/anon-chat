@@ -1,0 +1,27 @@
+run:
+  timeout: 2m
+  tests: true
+
+linters:
+  enable:
+    - govet
+    - staticcheck
+    - revive
+    - gofmt
+    - goimports
+    - errcheck
+    - unused
+    - goconst
+    - gocritic
+    - prealloc
+    - ineffassign
+    - nakedret
+    - bodyclose
+    - sqlclosecheck
+    - asciicheck
+
+linters-settings:
+  revive:
+    config: revive.toml
+  gofmt:
+    simplify: true

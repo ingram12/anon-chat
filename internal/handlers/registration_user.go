@@ -1,10 +1,9 @@
 package handlers
 
 import (
-	"anon-chat-backend/internal/api"
-	"anon-chat-backend/internal/config"
-	"anon-chat-backend/internal/pow"
-	"anon-chat-backend/internal/users"
+	"anon-chat/internal/api"
+	"anon-chat/internal/pow"
+	"anon-chat/internal/users"
 	"errors"
 	"net/http"
 
@@ -16,7 +15,7 @@ var (
 	ErrInvalidChallenge = errors.New("invalid challenge")
 )
 
-func RegisterUser(ctx echo.Context, config *config.Config, storage *users.UserStorage) error {
+func RegisterUser(ctx echo.Context, storage *users.UserStorage) error {
 	var req api.RegisterUserRequest
 	if err := ctx.Bind(&req); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
@@ -42,7 +41,7 @@ func RegisterUser(ctx echo.Context, config *config.Config, storage *users.UserSt
 	storage.UpdateUser(user)
 
 	resp := api.RegisterUserResponse{
-		UserId:  user.Id,
+		UserId:  user.ID,
 		Success: true,
 		Message: "User registered successfully",
 	}

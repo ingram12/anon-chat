@@ -17,13 +17,13 @@ type tokenInfo struct {
 	createdAt time.Time
 }
 
-type TokenStorage struct {
+type Storage struct {
 	mu            sync.RWMutex
 	tokens        map[string]tokenInfo
 	tokenLifetime time.Duration
 }
 
-var storage = &TokenStorage{
+var storage = &Storage{
 	tokens:        make(map[string]tokenInfo, maxTokens),
 	tokenLifetime: 30 * time.Second,
 }
@@ -48,7 +48,7 @@ func verifyHMACToken(data, token, secretKey string) bool {
 }
 
 // Storage management
-func (s *TokenStorage) addToken(token string) error {
+func (s *Storage) addToken(token string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -69,7 +69,7 @@ func (s *TokenStorage) addToken(token string) error {
 	return nil
 }
 
-func (s *TokenStorage) cleanupExpiredTokens() {
+func (s *Storage) cleanupExpiredTokens() {
 	now := time.Now()
 	for token, info := range s.tokens {
 		if now.Sub(info.createdAt) > s.tokenLifetime {
@@ -78,7 +78,7 @@ func (s *TokenStorage) cleanupExpiredTokens() {
 	}
 }
 
-func (s *TokenStorage) verifyAndRemoveToken(token string) error {
+func (s *Storage) verifyAndRemoveToken(token string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"anon-chat-backend/internal/api"
-	"anon-chat-backend/internal/config"
-	"anon-chat-backend/internal/handlers"
+	"anon-chat/internal/api"
+	"anon-chat/internal/config"
+	"anon-chat/internal/handlers"
 	"net/http"
 
 	"github.com/labstack/echo/v4"

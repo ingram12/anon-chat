@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"anon-chat-backend/internal/config"
-	"anon-chat-backend/internal/users"
+	"anon-chat/internal/config"
+	"anon-chat/internal/users"
 
 	"github.com/labstack/echo/v4"
 )
@@ -20,7 +20,7 @@ func NewUserService(config *config.Config) *UserService {
 }
 
 func (s *UserService) GetFirstChallenge(ctx echo.Context) error {
-	return GetFirstChallenge(ctx, s.config, s.storage)
+	return GetFirstChallenge(ctx, s.config)
 }
 
 func (s *UserService) SolveFirstChallenge(ctx echo.Context) error {
@@ -28,5 +28,5 @@ func (s *UserService) SolveFirstChallenge(ctx echo.Context) error {
 }
 
 func (s *UserService) RegisterUser(ctx echo.Context) error {
-	return RegisterUser(ctx, s.config, s.storage)
+	return RegisterUser(ctx, s.storage)
 }

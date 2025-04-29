@@ -73,7 +73,7 @@ func TestVerifyHMACToken(t *testing.T) {
 }
 
 func TestTokenStorage(t *testing.T) {
-	storage := &TokenStorage{
+	storage := &Storage{
 		tokens:        make(map[string]tokenInfo),
 		tokenLifetime: 1 * time.Second, // Short lifetime for testing
 	}
@@ -123,7 +123,7 @@ func TestTokenStorage(t *testing.T) {
 
 func TestPublicAPI(t *testing.T) {
 	// Create a new storage with short lifetime for testing
-	testStorage := &TokenStorage{
+	testStorage := &Storage{
 		tokens:        make(map[string]tokenInfo),
 		tokenLifetime: 1 * time.Second,
 	}
@@ -132,29 +132,28 @@ func TestPublicAPI(t *testing.T) {
 	storage = testStorage
 	defer func() { storage = oldStorage }()
 
+	const testData = "test_data"
+
 	t.Run("generate and verify token", func(t *testing.T) {
-		data := "test_data"
-		token, err := GenerateToken(data, testSecretKey)
+		token, err := GenerateToken(testData, testSecretKey)
 		if err != nil {
 			t.Fatalf("GenerateToken() error = %v", err)
 		}
 
-		if err := VerifyToken(data, token, testSecretKey); err != nil {
+		if err := VerifyToken(testData, token, testSecretKey); err != nil {
 			t.Errorf("VerifyToken() error = %v", err)
 		}
 	})
 
 	t.Run("verify invalid token", func(t *testing.T) {
-		data := "test_data"
 		token := "invalid_token"
-		if err := VerifyToken(data, token, testSecretKey); err != ErrInvalidToken {
+		if err := VerifyToken(testData, token, testSecretKey); err != ErrInvalidToken {
 			t.Errorf("VerifyToken() error = %v, want %v", err, ErrInvalidToken)
 		}
 	})
 
 	t.Run("verify expired token", func(t *testing.T) {
-		data := "test_data"
-		token, err := GenerateToken(data, testSecretKey)
+		token, err := GenerateToken(testData, testSecretKey)
 		if err != nil {
 			t.Fatalf("GenerateToken() error = %v", err)
 		}
@@ -162,7 +161,7 @@ func TestPublicAPI(t *testing.T) {
 		// Wait for token to expire
 		time.Sleep(testStorage.tokenLifetime + time.Second)
 
-		if err := VerifyToken(data, token, testSecretKey); err != ErrTokenExpired {
+		if err := VerifyToken(testData, token, testSecretKey); err != ErrTokenExpired {
 			t.Errorf("VerifyToken() error = %v, want %v", err, ErrTokenExpired)
 		}
 	})
