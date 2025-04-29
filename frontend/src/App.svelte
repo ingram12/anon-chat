@@ -1,32 +1,39 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { solveChallenge } from './lib/challenge';
 
-  let challenge = '';
-  let difficulty = 0;
-  let token = '';
-  let userId = '';
-  let error = ''; 
-  let solution = '';
+  interface ChallengeResponse {
+    challenge: string;
+    token: string;
+    userId: string;
+    difficulty: number;
+  }
 
-  async function getChallenge() {
+  let challenge: string = '';
+  let difficulty: number = 0;
+  let token: string = '';
+  let userId: string = '';
+  let error: string = ''; 
+  let solution: string = '';
+
+  async function getChallenge(): Promise<void> {
     try {
       const response = await fetch('http://localhost:8080/challenge/first');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
+      const data: ChallengeResponse = await response.json();
       challenge = data.challenge;
       token = data.token;
       userId = data.userId;
       difficulty = data.difficulty;
 
-      solution = await solveChallenge(challenge, 5000);
+      solution = await solveChallenge(challenge, 100); //TODO: difficulty should be dynamic
 
       console.log(data);
       error = '';
     } catch (e) {
-      error = `Failed to get challenge: ${e.message}`;
+      error = `Failed to get challenge: ${e instanceof Error ? e.message : String(e)}`;
       console.error('Error getting challenge:', e);
     }
   }

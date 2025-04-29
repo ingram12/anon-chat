@@ -1,4 +1,14 @@
-self.onmessage = async (e) => {
+interface WorkerRequest {
+  challenge: string;
+  difficulty: number;
+}
+
+interface WorkerResponse {
+  nonce?: string;
+  error?: string;
+}
+
+self.onmessage = async (e: MessageEvent<WorkerRequest>) => {
   const { challenge, difficulty } = e.data;
   const maxAttempts = 1000000;
 
@@ -14,10 +24,10 @@ self.onmessage = async (e) => {
     const hashBytes = buf;
 
     if (hashBytes[0] === 0) {
-      self.postMessage({ nonce: i.toString() });
+      self.postMessage({ nonce: i.toString() } as WorkerResponse);
       return;
     }
   }
 
-  self.postMessage({ error: "Can't find nonce" });
+  self.postMessage({ error: "Can't find nonce" } as WorkerResponse);
 }; 
