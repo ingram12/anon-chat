@@ -30,7 +30,7 @@ func (s *RotatingToken) GetRotatingToken() (string, error) {
 			return "", err
 		}
 
-		s.expiresAt = time.Now().Add(s.lifetime) // Set token lifetime to 2 minutes
+		s.expiresAt = time.Now().Add(s.lifetime)
 		s.value = token
 	}
 
