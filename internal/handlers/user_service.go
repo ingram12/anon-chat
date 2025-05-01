@@ -9,25 +9,25 @@ import (
 )
 
 type UserService struct {
-	config        *config.Config
+	cfg           *config.Config
 	storage       *users.UserStorage
 	rotatingToken *token.RotatingToken
 }
 
-func NewUserService(config *config.Config) *UserService {
+func NewUserService(cfg *config.Config) *UserService {
 	return &UserService{
-		config:        config,
+		cfg:           cfg,
 		storage:       users.NewUserStorage(),
-		rotatingToken: token.NewRotatingToken(config.SecondLifeTime),
+		rotatingToken: token.NewRotatingToken(cfg.SecondLifeTime),
 	}
 }
 
 func (s *UserService) GetFirstChallenge(ctx echo.Context) error {
-	return GetFirstChallenge(ctx, s.config, s.rotatingToken)
+	return GetFirstChallenge(ctx, s.cfg, s.rotatingToken)
 }
 
 func (s *UserService) SolveFirstChallenge(ctx echo.Context) error {
-	return SolveFirstChallenge(ctx, s.config, s.storage, s.rotatingToken)
+	return SolveFirstChallenge(ctx, s.cfg, s.storage, s.rotatingToken)
 }
 
 func (s *UserService) RegisterUser(ctx echo.Context) error {

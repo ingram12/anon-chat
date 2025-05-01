@@ -12,7 +12,7 @@ import (
 
 func GetFirstChallenge(
 	ctx echo.Context,
-	config *config.Config,
+	cfg *config.Config,
 	rotatingToken *token.RotatingToken,
 ) error {
 	userToken, err := token.GenerateUserToken()
@@ -25,7 +25,7 @@ func GetFirstChallenge(
 		return err
 	}
 
-	challenge := pow.GenerateChallenge(userToken, globalToken, config.TokenSecretKey)
+	challenge := pow.GenerateChallenge(userToken, globalToken, cfg.TokenSecretKey)
 
 	resp := api.GetFirstChallengeResponse{
 		Challenge:  challenge,

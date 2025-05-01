@@ -13,7 +13,7 @@ import (
 
 func SolveFirstChallenge(
 	ctx echo.Context,
-	config *config.Config,
+	cfg *config.Config,
 	storage *users.UserStorage,
 	rotatingToken *token.RotatingToken,
 ) error {
@@ -28,7 +28,7 @@ func SolveFirstChallenge(
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": "global token generation failed"})
 	}
 
-	isVerified := pow.VerifyChallenge(userToken, globalToken, req.Challenge, config.TokenSecretKey)
+	isVerified := pow.VerifyChallenge(userToken, globalToken, req.Challenge, cfg.TokenSecretKey)
 	if !isVerified {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "challenge verification failed"})
 	}
@@ -47,7 +47,7 @@ func SolveFirstChallenge(
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
 
-	newChallenge := pow.GenerateChallenge(newUserToken, newGlobalToken, config.TokenSecretKey)
+	newChallenge := pow.GenerateChallenge(newUserToken, newGlobalToken, cfg.TokenSecretKey)
 
 	user, err := storage.CreateUser(newChallenge, int(req.Difficulty))
 	if err != nil {
