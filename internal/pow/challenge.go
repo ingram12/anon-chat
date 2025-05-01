@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-func VerifyNonce(challenge, nonce string, difficulty int) bool {
+func VerifyChallengeNonce(challenge, nonce string, difficulty int) bool {
 	hash := []byte(challenge + nonce)
 
 	for i := 0; i < difficulty; i++ {
@@ -22,7 +22,7 @@ func VerifyNonce(challenge, nonce string, difficulty int) bool {
 func SolveChallenge(challenge string, difficulty int) (string, error) {
 	for i := range 100000000 {
 		nonce := fmt.Sprintf("%d", i)
-		if VerifyNonce(challenge, nonce, difficulty) {
+		if VerifyChallengeNonce(challenge, nonce, difficulty) {
 			return nonce, nil
 		}
 	}
