@@ -92,34 +92,63 @@
 </main>
 
 <style>
+  :global(body) {
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
   main {
     max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
+    background-color: #1e1e1e;
+    border-radius: 3px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
   }
 
   h1 {
     text-align: center;
     margin-bottom: 2rem;
+    color: #ffffff;
   }
 
   .error {
-    color: red;
+    color: #ff6b6b;
+    background-color: #2e2e2e;
     padding: 1rem;
-    border: 1px solid red;
-    border-radius: 4px;
+    border: 1px solid #ff6b6b;
+    border-radius: 3px;
     margin-bottom: 1rem;
   }
 
   .challenge {
     padding: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f5f5f5;
+    border: 1px solid #333;
+    border-radius: 3px;
+    background-color: #2a2a2a;
+  }
+
+  .challenge p {
+    margin: 0.5rem 0;
+    color: #ccc;
+    font-family: monospace;
   }
 
   .loading {
     text-align: center;
     padding: 2rem;
+    color: #aaa;
+  }
+
+  a {
+    color: #90caf9;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
   }
 </style>
