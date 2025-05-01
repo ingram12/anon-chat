@@ -12,7 +12,7 @@ func NewConfig() *Config {
 	secretKey := os.Getenv("TOKEN_SECRET_KEY")
 
 	if secretKey == "" {
-		secretKey = "fgsjffsrujJJHJHGOBJWHQP'[]KKK"
+		secretKey = "DEFAULT-SECRET-KEY-ALARMfgsjffsr"
 	}
 
 	return &Config{
