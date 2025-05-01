@@ -14,6 +14,9 @@ import (
 func main() {
 	e := echo.New()
 
+	// Add limit of 128K to the request body
+	e.Use(middleware.BodyLimit("128K"))
+
 	// Add CORS middleware
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
