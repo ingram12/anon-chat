@@ -94,13 +94,8 @@
               "type": "string",
               "description": "The challenge string that needs to be solved"
             },
-            "token": {
-              "type": "string",
-              "description": "Temporary token for challenge verification"
-            },
-            "userId": {
-              "type": "string",
-              "description": "Temporary user ID for the challenge session"
+            "key": {
+              "type": "string"
             },
             "difficulty": {
               "type": "integer",
@@ -110,30 +105,24 @@
           },
           "required": [
             "challenge",
-            "token",
-            "userId",
-            "difficulty"
+            "difficulty",
+            "key"
           ]
         },
         "SolveFirstChallengeRequest": {
           "type": "object",
           "description": "Request to solve the first challenge",
           "properties": {
-            "userId": {
-              "type": "string",
-              "description": "Temporary user ID received from the challenge"
-            },
             "challenge": {
               "type": "string",
               "description": "The challenge string that was received"
             },
+            "key": {
+              "type": "string"
+            },
             "solution": {
               "type": "string",
               "description": "The solution to the challenge"
-            },
-            "token": {
-              "type": "string",
-              "description": "Temporary token received from the challenge"
             },
             "difficulty": {
               "type": "integer",
@@ -142,11 +131,10 @@
             }
           },
           "required": [
-            "userId",
             "challenge",
             "solution",
-            "token",
-            "difficulty"
+            "difficulty",
+            "key"
           ]
         },
         "SolveFirstChallengeResponse": {
@@ -154,23 +142,11 @@
           "description": "Response after successful challenge solution",
           "properties": {
             "userId": {
-              "type": "string",
-              "description": "Verified user ID for registration"
-            },
-            "challenge": {
-              "type": "string",
-              "description": "The solved challenge string"
-            },
-            "difficulty": {
-              "type": "integer",
-              "format": "int32",
-              "description": "Difficulty level of the solved challenge"
+              "type": "string"
             }
           },
           "required": [
-            "userId",
-            "challenge",
-            "difficulty"
+            "userId"
           ]
         },
         "RegisterUserRequest": {

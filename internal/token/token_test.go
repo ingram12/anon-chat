@@ -28,7 +28,7 @@ func TestGenerateHMACToken(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := generateHMACToken(tt.input, testSecretKey, tt.time)
+			got := generateHMACToken(tt.input, testSecretKey)
 			if got != tt.expected {
 				t.Errorf("generateHMACToken() = %v, want %v", got, tt.expected)
 			}
@@ -69,7 +69,7 @@ func TestVerifyHMACToken(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := verifyHMACToken(tt.data, tt.token, testSecretKey, tt.time)
+			got := verifyHMACToken(tt.data, tt.token, testSecretKey)
 			if got != tt.expected {
 				t.Errorf("verifyHMACToken() = %v, want %v", got, tt.expected)
 			}
@@ -78,15 +78,6 @@ func TestVerifyHMACToken(t *testing.T) {
 }
 
 func TestTokenStorage(t *testing.T) {
-	// Override the global storage for testing purposes.
-	originalStorage := storage
-	storage = &Storage{
-		tokenLifetime: 1 * time.Second, // Short lifetime for testing
-	}
-	defer func() {
-		storage = originalStorage // Restore the original storage after the test.
-	}()
-
 	data := "test_data"
 	// Generate a token and verify it.
 	token1, err := GenerateToken(data, testSecretKey)

@@ -46,18 +46,18 @@ func TestVerifySolution(t *testing.T) {
 }
 
 func TestSolveChallenge(t *testing.T) {
-	challenge, err := GenerateChallenge(30)
+	challenge, err := RandomKey()
 	if err != nil {
 		t.Fatalf("GenerateChallenge() failed: %v", err)
 	}
 
-	solution, err := SolveChallenge(challenge.Challenge, challenge.Difficulty)
+	solution, err := SolveChallenge(challenge, 30)
 	if err != nil {
 		t.Fatalf("SolveChallenge() failed: %v", err)
 	}
 
-	if VerifySolution(challenge.Challenge, solution, challenge.Difficulty) {
-		t.Logf("Found solution: %v for challenge: %v", solution, challenge.Challenge)
+	if VerifySolution(challenge, solution, 30) {
+		t.Logf("Found solution: %v for challenge: %v", solution, 30)
 	} else {
 		t.Errorf("VerifySolution() failed for found solution: %v", solution)
 	}

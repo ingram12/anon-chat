@@ -7,28 +7,25 @@ import (
 	"anon-chat/internal/token"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 func GetFirstChallenge(ctx echo.Context, config *config.Config) error {
-	challenge, err := pow.GenerateChallenge(100) // TODO: make difficulty configurable
+	key, err := pow.RandomKey()
 	if err != nil {
 		return err
 	}
 
-	userID := uuid.New().String()
-
-	token, err := token.GenerateToken(challenge.Challenge+userID, config.TokenSecretKey)
+	challenge, err := token.GenerateToken(key, config.TokenSecretKey)
 	if err != nil {
 		return err
 	}
 
 	resp := api.GetFirstChallengeResponse{
-		Challenge:  challenge.Challenge,
-		Token:      token,
-		Difficulty: int32(challenge.Difficulty),
-		UserId:     userID,
+		Challenge:  challenge,
+		Key:        key,
+		Difficulty: int32(30),
 	}
+
 	return ctx.JSON(http.StatusOK, resp)
 }

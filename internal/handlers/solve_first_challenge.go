@@ -23,7 +23,8 @@ func SolveFirstChallenge(ctx echo.Context, config *config.Config, storage *users
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
-	if err := token.VerifyToken(req.Challenge+req.UserId, req.Token, config.TokenSecretKey); err != nil {
+	err := token.VerifyToken(req.Key, req.Challenge, config.TokenSecretKey)
+	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
@@ -31,20 +32,18 @@ func SolveFirstChallenge(ctx echo.Context, config *config.Config, storage *users
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": ErrInvalidSolution.Error()})
 	}
 
-	newChallenge, err := pow.GenerateChallenge(100) // TODO: make difficulty configurable
+	newChallenge, err := pow.RandomKey() // TODO: make difficulty configurable
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
-	user, err := storage.CreateUser(req.UserId, newChallenge.Challenge, int(req.Difficulty))
+	user, err := storage.CreateUser(newChallenge, int(req.Difficulty))
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
 	resp := api.SolveFirstChallengeResponse{
-		UserId:     user.ID,
-		Challenge:  user.CurrentChallenge,
-		Difficulty: int32(user.Difficulty),
+		UserId: user.ID,
 	}
 	return ctx.JSON(http.StatusOK, resp)
 }

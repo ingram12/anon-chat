@@ -9,24 +9,18 @@ import (
 )
 
 const (
-	ChallengeLength = 32
+	ChallengeLength = 16 // Length of the challenge in bytes
 )
 
-type Challenge struct {
-	Challenge  string
-	Difficulty int
-}
-
-func GenerateChallenge(difficulty int) (Challenge, error) {
+func RandomKey() (string, error) {
 	b := make([]byte, ChallengeLength)
-	if _, err := rand.Read(b); err != nil {
-		return Challenge{}, err
+	_, err := rand.Read(b)
+
+	if err != nil {
+		return "", err
 	}
 
-	return Challenge{
-		Challenge:  hex.EncodeToString(b),
-		Difficulty: difficulty,
-	}, nil
+	return hex.EncodeToString(b), nil
 }
 
 func VerifySolution(challenge, nonce string, difficulty int) bool {
@@ -37,7 +31,7 @@ func VerifySolution(challenge, nonce string, difficulty int) bool {
 		hash = sum[:]
 	}
 
-	return hash[0] == 0 && hash[1] == 0
+	return hash[0] == 0
 }
 
 func SolveChallenge(challenge string, difficulty int) (string, error) {

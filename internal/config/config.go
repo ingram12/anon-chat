@@ -4,6 +4,7 @@ import "os"
 
 type Config struct {
 	TokenSecretKey string
+	RandomKeySize  int
 }
 
 func NewConfig() *Config {
@@ -15,5 +16,6 @@ func NewConfig() *Config {
 
 	return &Config{
 		TokenSecretKey: secretKey,
+		RandomKeySize:  16,
 	}
 }

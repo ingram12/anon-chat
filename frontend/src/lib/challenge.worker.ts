@@ -23,7 +23,7 @@ self.onmessage = async (e: MessageEvent<WorkerRequest>) => {
 
     const hashBytes = buf;
 
-    if (hashBytes[0] === 0 && hashBytes[1] === 0) {
+    if (hashBytes[0] === 0) {
       self.postMessage({ nonce: i.toString() } as WorkerResponse);
       return;
     }

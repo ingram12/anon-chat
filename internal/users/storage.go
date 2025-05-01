@@ -3,6 +3,8 @@ package users
 import (
 	"sync"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type User struct {
@@ -27,9 +29,11 @@ func NewUserStorage() *UserStorage {
 	}
 }
 
-func (s *UserStorage) CreateUser(userID string, challenge string, difficulty int) (*User, error) {
+func (s *UserStorage) CreateUser(challenge string, difficulty int) (*User, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
+	userID := uuid.NewString()
 
 	user := &User{
 		ID:               userID,
