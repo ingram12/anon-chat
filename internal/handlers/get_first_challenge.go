@@ -10,21 +10,27 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func GetFirstChallenge(ctx echo.Context, config *config.Config) error {
-	key, err := pow.RandomKey()
+func GetFirstChallenge(
+	ctx echo.Context,
+	config *config.Config,
+	rotatingToken *token.RotatingToken,
+) error {
+	userToken, err := token.GenerateUserToken()
 	if err != nil {
 		return err
 	}
 
-	challenge, err := token.GenerateToken(key, config.TokenSecretKey)
+	globalToken, err := rotatingToken.GetRotatingToken()
 	if err != nil {
 		return err
 	}
+
+	challenge := pow.GenerateChallange(userToken, globalToken, config.TokenSecretKey)
 
 	resp := api.GetFirstChallengeResponse{
 		Challenge:  challenge,
-		Key:        key,
-		Difficulty: int32(30),
+		Token:      userToken,
+		Difficulty: int32(30), // TODO: make it configurable
 	}
 
 	return ctx.JSON(http.StatusOK, resp)

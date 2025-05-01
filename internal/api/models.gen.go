@@ -10,7 +10,7 @@ type GetFirstChallengeResponse struct {
 
 	// Difficulty Difficulty level of the challenge
 	Difficulty int32  `json:"difficulty"`
-	Key        string `json:"key"`
+	Token      string `json:"token"`
 }
 
 // RegisterUserRequest Request to register a new user
@@ -24,12 +24,12 @@ type RegisterUserRequest struct {
 	// Nickname User's chosen display name
 	Nickname string `json:"nickname"`
 
-	// PublicKey User's public key for secure communication
-	PublicKey string `json:"publicKey"`
+	// Nonce The solution to the challenge
+	Nonce string `json:"nonce"`
 
-	// Solution The solution to the challenge
-	Solution string   `json:"solution"`
-	Tags     []string `json:"tags"`
+	// PublicKey User's public key for secure communication
+	PublicKey string   `json:"publicKey"`
+	Tags      []string `json:"tags"`
 
 	// UserId Verified user ID from challenge solution
 	UserId string `json:"userId"`
@@ -53,11 +53,11 @@ type SolveFirstChallengeRequest struct {
 	Challenge string `json:"challenge"`
 
 	// Difficulty Difficulty level of the challenge
-	Difficulty int32  `json:"difficulty"`
-	Key        string `json:"key"`
+	Difficulty int32 `json:"difficulty"`
 
-	// Solution The solution to the challenge
-	Solution string `json:"solution"`
+	// Nonce The solution to the challenge
+	Nonce string `json:"nonce"`
+	Token string `json:"token"`
 }
 
 // SolveFirstChallengeResponse Response after successful challenge solution

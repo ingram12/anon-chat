@@ -1,6 +1,7 @@
 package pow
 
 import (
+	"anon-chat/internal/token"
 	"testing"
 )
 
@@ -46,7 +47,7 @@ func TestVerifySolution(t *testing.T) {
 }
 
 func TestSolveChallenge(t *testing.T) {
-	challenge, err := RandomKey()
+	challenge, err := token.RandomKey()
 	if err != nil {
 		t.Fatalf("GenerateChallenge() failed: %v", err)
 	}

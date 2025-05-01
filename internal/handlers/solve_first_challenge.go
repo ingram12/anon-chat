@@ -6,36 +6,48 @@ import (
 	"anon-chat/internal/pow"
 	"anon-chat/internal/token"
 	"anon-chat/internal/users"
-	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
-var (
-	ErrInvalidSolution = errors.New("invalid solution")
-	ErrInvalidToken    = errors.New("invalid token")
-)
-
-func SolveFirstChallenge(ctx echo.Context, config *config.Config, storage *users.UserStorage) error {
+func SolveFirstChallenge(
+	ctx echo.Context,
+	config *config.Config,
+	storage *users.UserStorage,
+	rotatingToken *token.RotatingToken,
+) error {
 	var req api.SolveFirstChallengeRequest
 	if err := ctx.Bind(&req); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
-	err := token.VerifyToken(req.Key, req.Challenge, config.TokenSecretKey)
+	userToken := req.Token
+	globalToken, err := rotatingToken.GetRotatingToken()
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "global token generation failed"})
 	}
 
-	if !pow.VerifySolution(req.Challenge, req.Solution, int(req.Difficulty)) {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": ErrInvalidSolution.Error()})
+	isVerified := pow.VerifyChallenge(userToken, globalToken, req.Challenge, config.TokenSecretKey)
+	if !isVerified {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "challenge verification failed"})
 	}
 
-	newChallenge, err := pow.RandomKey() // TODO: make difficulty configurable
-	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
+	if !pow.VerifySolution(req.Challenge, req.Nonce, int(req.Difficulty)) {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "invalid solution"})
 	}
+
+	newUserToken, err := token.GenerateUserToken()
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+	}
+
+	newGlobalToken, err := rotatingToken.GetRotatingToken()
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+	}
+
+	newChallenge := pow.GenerateChallange(newUserToken, newGlobalToken, config.TokenSecretKey)
 
 	user, err := storage.CreateUser(newChallenge, int(req.Difficulty))
 	if err != nil {

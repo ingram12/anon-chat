@@ -13,6 +13,7 @@ import (
 var (
 	ErrUserNotFound     = errors.New("user not found")
 	ErrInvalidChallenge = errors.New("invalid challenge")
+	ErrInvalidSolution  = errors.New("invalid solution")
 )
 
 func RegisterUser(ctx echo.Context, storage *users.UserStorage) error {
@@ -30,7 +31,7 @@ func RegisterUser(ctx echo.Context, storage *users.UserStorage) error {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": ErrInvalidChallenge.Error()})
 	}
 
-	if !pow.VerifySolution(req.Challenge, req.Solution, int(req.Difficulty)) {
+	if !pow.VerifySolution(req.Challenge, req.Nonce, int(req.Difficulty)) {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": ErrInvalidSolution.Error()})
 	}
 

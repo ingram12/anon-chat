@@ -4,7 +4,7 @@
 
   interface ChallengeResponse {
     challenge: string;
-    key: string;
+    token: string;
     difficulty: number;
   }
 
@@ -13,7 +13,7 @@
   let token: string = '';
   let userId: string = '';
   let error: string = ''; 
-  let solution: string = '';
+  let nonce: string = '';
   let key: string = '';
 
   async function getChallenge(): Promise<void> {
@@ -25,15 +25,45 @@
       const data: ChallengeResponse = await response.json();
       challenge = data.challenge;
       difficulty = data.difficulty;
-      key = data.key;
+      token = data.token;
 
-      solution = await solveChallenge(challenge, difficulty); //TODO: difficulty should be dynamic
+      nonce = await solveChallenge(challenge, difficulty);
 
       console.log(data);
       error = '';
+      setTimeout(() => {
+        submitSolution();
+      }, 0); // Delay for 1 second before submitting the solution
     } catch (e) {
       error = `Failed to get challenge: ${e instanceof Error ? e.message : String(e)}`;
       console.error('Error getting challenge:', e);
+    }
+  }
+
+  async function submitSolution(): Promise<void> {
+    try {
+      const response = await fetch('http://localhost:8080/challenge/solve', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          challenge,
+          nonce,
+          difficulty,
+          token,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Solution submitted:', data);
+    } catch (e) {
+      error = `Failed to submit solution: ${e instanceof Error ? e.message : String(e)}`;
+      console.error('Error submitting solution:', e);
     }
   }
 
@@ -53,8 +83,8 @@
     <div class="challenge">
       <h2>Challenge Received</h2>
       <p>Challenge: {challenge}</p>
-      <p>Solution: {solution}</p>
-      <p>Key: {key}</p>
+      <p>Solution: {nonce}</p>
+      <p>Key: {token}</p>
       <p>UserId: {userId}</p>
     </div>
   {:else}

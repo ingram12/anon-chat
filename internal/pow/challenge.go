@@ -1,27 +1,12 @@
 package pow
 
 import (
-	"crypto/rand"
+	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
 )
-
-const (
-	ChallengeLength = 16 // Length of the challenge in bytes
-)
-
-func RandomKey() (string, error) {
-	b := make([]byte, ChallengeLength)
-	_, err := rand.Read(b)
-
-	if err != nil {
-		return "", err
-	}
-
-	return hex.EncodeToString(b), nil
-}
 
 func VerifySolution(challenge, nonce string, difficulty int) bool {
 	hash := []byte(challenge + nonce)
@@ -42,4 +27,31 @@ func SolveChallenge(challenge string, difficulty int) (string, error) {
 		}
 	}
 	return "", errors.New("could not find valid nonce within maxAttempts")
+}
+
+func generateHMACToken(data, secretKey string) string {
+	h := hmac.New(sha256.New, []byte(secretKey))
+	h.Write([]byte(data))
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+func verifyHMACToken(data, token, secretKey string) bool {
+	expectedToken := generateHMACToken(data, secretKey)
+	return hmac.Equal([]byte(token), []byte(expectedToken))
+}
+
+// Public API
+func GenerateChallange(userKey, globalKey, secretKey string) string {
+	return generateHMACToken(
+		globalKey+"|"+userKey,
+		secretKey,
+	)
+}
+
+func VerifyChallenge(userKey, globalKey, token, secretKey string) bool {
+	return verifyHMACToken(
+		globalKey+"|"+userKey,
+		token,
+		secretKey,
+	)
 }

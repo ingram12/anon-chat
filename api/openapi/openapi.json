@@ -94,7 +94,7 @@
               "type": "string",
               "description": "The challenge string that needs to be solved"
             },
-            "key": {
+            "token": {
               "type": "string"
             },
             "difficulty": {
@@ -106,7 +106,7 @@
           "required": [
             "challenge",
             "difficulty",
-            "key"
+            "token"
           ]
         },
         "SolveFirstChallengeRequest": {
@@ -117,10 +117,10 @@
               "type": "string",
               "description": "The challenge string that was received"
             },
-            "key": {
+            "token": {
               "type": "string"
             },
-            "solution": {
+            "nonce": {
               "type": "string",
               "description": "The solution to the challenge"
             },
@@ -132,9 +132,9 @@
           },
           "required": [
             "challenge",
-            "solution",
+            "nonce",
             "difficulty",
-            "key"
+            "token"
           ]
         },
         "SolveFirstChallengeResponse": {
@@ -161,7 +161,7 @@
               "type": "string",
               "description": "The solved challenge string"
             },
-            "solution": {
+            "nonce": {
               "type": "string",
               "description": "The solution to the challenge"
             },
@@ -189,7 +189,7 @@
           "required": [
             "userId",
             "challenge", 
-            "solution",
+            "nonce",
             "nickname",
             "publicKey",
             "difficulty",
