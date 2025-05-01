@@ -24,12 +24,11 @@ func main() {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 
+	// Use OAPI middleware for request validation based on the Swagger spec.
 	swagger, err := api.GetSwagger()
 	if err != nil {
 		panic("Failed to load swagger.json")
 	}
-
-	// Use OAPI middleware for request validation based on the Swagger spec.
 	e.Use(middlewareValidator.OapiRequestValidator(swagger))
 
 	configuration := config.NewConfig()
