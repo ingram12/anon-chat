@@ -7,13 +7,11 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	middleware "github.com/labstack/echo/v4/middleware"
+	middlewareValidator "github.com/oapi-codegen/echo-middleware"
 )
 
 func main() {
-	configuration := config.NewConfig()
-	userService := handlers.NewUserService(configuration)
-
 	e := echo.New()
 
 	// Add CORS middleware
@@ -23,6 +21,16 @@ func main() {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 
+	swagger, err := api.GetSwagger()
+	if err != nil {
+		panic("Failed to load swagger.json")
+	}
+
+	// Use OAPI middleware for request validation based on the Swagger spec.
+	e.Use(middlewareValidator.OapiRequestValidator(swagger))
+
+	configuration := config.NewConfig()
+	userService := handlers.NewUserService(configuration)
 	api.RegisterHandlers(e, userService)
 
 	// Add route to serve swagger.json

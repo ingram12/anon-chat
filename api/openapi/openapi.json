@@ -92,15 +92,21 @@
           "properties": {
             "challenge": {
               "type": "string",
-              "description": "The challenge string that needs to be solved"
+              "description": "The challenge string that needs to be solved",
+              "minLength": 64,
+              "maxLength": 64
             },
             "token": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
             },
             "difficulty": {
               "type": "integer",
               "format": "int32",
-              "description": "Difficulty level of the challenge"
+              "description": "Difficulty level of the challenge",
+              "minimum": 1,
+              "maximum": 99999
             }
           },
           "required": [
@@ -115,19 +121,27 @@
           "properties": {
             "challenge": {
               "type": "string",
-              "description": "The challenge string that was received"
+              "description": "The challenge string that was received",
+              "minLength": 64,
+              "maxLength": 64
             },
             "token": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
             },
             "nonce": {
               "type": "string",
-              "description": "The solution to the challenge"
+              "description": "The solution to the challenge",
+              "minLength": 1,
+              "maxLength": 64
             },
             "difficulty": {
               "type": "integer",
               "format": "int32",
-              "description": "Difficulty level of the challenge"
+              "description": "Difficulty level of the challenge",
+              "minimum": 1,
+              "maximum": 99999
             }
           },
           "required": [
@@ -155,35 +169,49 @@
           "properties": {
             "userId": {
               "type": "string",
-              "description": "Verified user ID from challenge solution"
+              "description": "Verified user ID from challenge solution",
+              "minLength": 1,
+              "maxLength": 64
             },
             "challenge": {
               "type": "string",
-              "description": "The solved challenge string"
+              "description": "The solved challenge string",
+              "minLength": 64,
+              "maxLength": 64
             },
             "nonce": {
               "type": "string",
-              "description": "The solution to the challenge"
+              "description": "The solution to the challenge",
+              "minLength": 1,
+              "maxLength": 64
             },
             "nickname": {
               "type": "string",
-              "description": "User's chosen display name"
+              "description": "User's chosen display name",
+              "minLength": 1,
+              "maxLength": 128
             },
             "tags": {
               "type": "array",
               "items": {
                 "description": "User's interest tags",
-                "type": "string"
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
               }
             },
             "publicKey": {
               "type": "string",
-              "description": "User's public key for secure communication"
+              "description": "User's public key for secure communication",
+              "minLength": 1,
+              "maxLength": 512
             },
             "difficulty": {
               "type": "integer",
               "format": "int32",
-              "description": "Difficulty level of the solved challenge"
+              "description": "Difficulty level of the solved challenge",
+              "minimum": 1,
+              "maximum": 99999
             }
           },
           "required": [
@@ -202,7 +230,9 @@
           "properties": {
             "userId": {
               "type": "string",
-              "description": "Registered user ID"
+              "description": "Registered user ID",
+              "minLength": 1,
+              "maxLength": 64
             },
             "success": {
               "type": "boolean",
@@ -210,7 +240,8 @@
             },
             "message": {
               "type": "string",
-              "description": "Additional information about the registration result"
+              "description": "Additional information about the registration result",
+              "maxLength": 512
             }
           },
           "required": [

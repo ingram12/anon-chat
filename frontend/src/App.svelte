@@ -26,7 +26,6 @@
       challenge = data.challenge;
       difficulty = data.difficulty;
       token = data.token;
-
       nonce = await solveChallenge(challenge, difficulty);
 
       console.log(data);
