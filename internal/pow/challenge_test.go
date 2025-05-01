@@ -38,7 +38,7 @@ func TestVerifySolution(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := VerifySolution(tt.challenge, tt.solution, tt.difficulty)
+			got := VerifyNonce(tt.challenge, tt.solution, tt.difficulty)
 			if got != tt.want {
 				t.Errorf("VerifySolution() = %v, want %v", got, tt.want)
 			}
@@ -57,7 +57,7 @@ func TestSolveChallenge(t *testing.T) {
 		t.Fatalf("SolveChallenge() failed: %v", err)
 	}
 
-	if VerifySolution(challenge, solution, 30) {
+	if VerifyNonce(challenge, solution, 30) {
 		t.Logf("Found solution: %v for challenge: %v", solution, 30)
 	} else {
 		t.Errorf("VerifySolution() failed for found solution: %v", solution)
