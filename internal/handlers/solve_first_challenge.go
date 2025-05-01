@@ -34,7 +34,7 @@ func SolveFirstChallenge(
 	}
 
 	if !pow.VerifyChallengeNonce(req.Challenge, req.Nonce, int(req.Difficulty)) {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "invalid solution"})
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "invalid PoW nonce"})
 	}
 
 	newUserToken, err := token.GenerateUserToken()
