@@ -27,7 +27,7 @@ func GetFirstChallenge(
 	resp := api.GetFirstChallengeResponse{
 		Challenge:  challenge,
 		Token:      userToken,
-		Difficulty: 30, // TODO: make it configurable
+		Difficulty: int32(cfg.FirstChallengeDifficulty),
 	}
 
 	return ctx.JSON(http.StatusOK, resp)

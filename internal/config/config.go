@@ -3,9 +3,9 @@ package config
 import "os"
 
 type Config struct {
-	TokenSecretKey string
-	RandomKeySize  int
-	SecondLifeTime int
+	TokenSecretKey           string
+	FirstChallengeDifficulty int
+	SecondLifeTime           int
 }
 
 func NewConfig() *Config {
@@ -16,8 +16,8 @@ func NewConfig() *Config {
 	}
 
 	return &Config{
-		TokenSecretKey: secretKey,
-		RandomKeySize:  16,
-		SecondLifeTime: 120,
+		TokenSecretKey:           secretKey,
+		FirstChallengeDifficulty: 300,
+		SecondLifeTime:           120,
 	}
 }
