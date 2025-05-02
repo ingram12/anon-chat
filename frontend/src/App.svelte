@@ -1,30 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { solveChallenge } from './lib/challenge';
-
-  interface ChallengeResponse {
-    challenge: string;
-    token: string;
-    difficulty: number;
-  }
-
-  interface RegisterUserRequest {
-    challenge: string;
-    token: string;
-    difficulty: number;
-    userId: string;
-    nonce: string;
-    nickname: string;
-    publicKey: string;
-    tags: string[];
-  }
-
-  interface SolveFirstChallengeResponse {
-    userId: string;
-    challenge: string;
-    token: string;
-    difficulty: number;
-  }
+  import { getFirstChallenge, solveFirstChallenge, registerUser } from './lib/api';
+    import { E2ECryptoHandler } from './lib/e2e-crypto';
 
   let challenge: string = '';
   let difficulty: number = 0;
@@ -36,13 +14,20 @@
   let publicKey: string = 'key228';
   let tags: string[] = [];
 
+  // export enum UserStage {
+  //   Idle = 'Idle',                       // только что зашел
+  //   ChallengeSolved = 'ChallengeSolved', // решил PoW, получил UserId
+  //   Registered = 'Registered',           // зарегистрирован, ищет собеседника
+  //   Connected = 'Connected',             // подключен к собеседнику
+  // }
+
+  // let state = {
+  //   stage: UserStage = UserStage.Idle,
+  // }
+
   async function getChallenge(): Promise<void> {
     try {
-      const response = await fetch('http://localhost:8080/challenge/first');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: ChallengeResponse = await response.json();
+      const data = await getFirstChallenge();
       challenge = data.challenge;
       difficulty = data.difficulty;
       token = data.token;
@@ -52,7 +37,7 @@
       error = '';
       setTimeout(() => {
         submitSolution();
-      }, 0); // Delay for 1 second before submitting the solution
+      }, 0);
     } catch (e) {
       error = `Failed to get challenge: ${e instanceof Error ? e.message : String(e)}`;
       console.error('Error getting challenge:', e);
@@ -61,24 +46,13 @@
 
   async function submitSolution(): Promise<void> {
     try {
-      const response = await fetch('http://localhost:8080/challenge/solve', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          challenge,
-          nonce,
-          difficulty,
-          token,
-        }),
+      const data = await solveFirstChallenge({
+        challenge,
+        nonce,
+        difficulty,
+        token,
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data: SolveFirstChallengeResponse = await response.json();
       userId = data.userId;
       challenge = data.challenge;
       difficulty = data.difficulty;
@@ -97,33 +71,25 @@
   }
 
   async function registrationUser(): Promise<void> {
+    const keys = new E2ECryptoHandler();
+    await keys.generateKeyPair();
+
     try {
-      const response = await fetch('http://localhost:8080/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          challenge,
-          nonce,
-          difficulty,
-          token,
-          userId,
-          nickname,
-          publicKey,
-          tags,
-        }),
+      const data = await registerUser({
+        challenge,
+        nonce,
+        difficulty,
+        token,
+        userId,
+        nickname,
+        publicKey: keys.publicKeyBase64,
+        tags,
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('Solution submitted:', data);
+      console.log('Registration submitted:', data);
     } catch (e) {
-      error = `Failed to submit solution: ${e instanceof Error ? e.message : String(e)}`;
-      console.error('Error submitting solution:', e);
+      error = `Failed to register user: ${e instanceof Error ? e.message : String(e)}`;
+      console.error('Error registering user:', e);
     }
   }
 

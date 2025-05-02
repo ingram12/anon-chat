@@ -4,9 +4,9 @@
       "moduleResolution": "node",
       "module": "esnext",
       "target": "esnext",
-      "types": ["svelte"]
+      "types": ["svelte", "node", "jest"],
+      "verbatimModuleSyntax": false
     },
     "include": ["src/**/*.ts", "src/**/*.svelte"],
     "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
-  }
-  
+}
