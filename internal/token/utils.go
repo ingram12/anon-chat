@@ -1,21 +1,8 @@
 package token
 
-import (
-	"crypto/rand"
-	"encoding/hex"
-)
+import "github.com/google/uuid"
 
-const (
-	ChallengeLength = 16 // Length of the challenge in bytes
-)
-
-func RandomKey() (string, error) {
-	b := make([]byte, ChallengeLength)
-	_, err := rand.Read(b)
-
-	if err != nil {
-		return "", err
-	}
-
-	return hex.EncodeToString(b), nil
+// RandomKey generates a random key using UUID v4
+func RandomKey() string {
+	return uuid.New().String()
 }

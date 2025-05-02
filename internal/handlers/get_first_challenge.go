@@ -15,10 +15,7 @@ func GetFirstChallenge(
 	cfg *config.Config,
 	rotatingToken *token.RotatingToken,
 ) error {
-	userToken, err := token.GenerateUserToken()
-	if err != nil {
-		return err
-	}
+	userToken := token.GenerateUserToken()
 
 	globalToken, err := rotatingToken.GetRotatingToken()
 	if err != nil {
@@ -30,7 +27,7 @@ func GetFirstChallenge(
 	resp := api.GetFirstChallengeResponse{
 		Challenge:  challenge,
 		Token:      userToken,
-		Difficulty: int32(30), // TODO: make it configurable
+		Difficulty: 30, // TODO: make it configurable
 	}
 
 	return ctx.JSON(http.StatusOK, resp)

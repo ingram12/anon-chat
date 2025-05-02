@@ -37,10 +37,7 @@ func SolveFirstChallenge(
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "invalid PoW nonce"})
 	}
 
-	newUserToken, err := token.GenerateUserToken()
-	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
-	}
+	newUserToken := token.GenerateUserToken()
 
 	newGlobalToken, err := rotatingToken.GetRotatingToken()
 	if err != nil {

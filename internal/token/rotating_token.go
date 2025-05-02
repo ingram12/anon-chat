@@ -24,14 +24,9 @@ func (s *RotatingToken) GetRotatingToken() (string, error) {
 
 	// Check if the token is expired or not set
 	if s.value == "" || s.expiresAt.Before(time.Now()) {
-		// Generate a new RotatingToken
-		token, err := RandomKey()
-		if err != nil {
-			return "", err
-		}
-
+		// Generate a new token
 		s.expiresAt = time.Now().Add(s.lifetime)
-		s.value = token
+		s.value = RandomKey()
 	}
 
 	return s.value, nil

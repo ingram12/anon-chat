@@ -1,5 +1,5 @@
 package token
 
-func GenerateUserToken() (string, error) {
+func GenerateUserToken() string {
 	return RandomKey()
 }

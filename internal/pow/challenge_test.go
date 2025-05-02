@@ -47,10 +47,7 @@ func TestVerifyChallengeNonce(t *testing.T) {
 }
 
 func TestSolveChallenge(t *testing.T) {
-	challenge, err := token.RandomKey()
-	if err != nil {
-		t.Fatalf("GenerateChallenge() failed: %v", err)
-	}
+	challenge := token.RandomKey()
 
 	solution, err := SolveChallenge(challenge, 30)
 	if err != nil {
