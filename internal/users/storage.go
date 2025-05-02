@@ -55,6 +55,14 @@ func (s *UserStorage) GetUser(userID string) (*User, bool) {
 	return user, exists
 }
 
+func (s *UserStorage) IsUserExist(userID string) bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	_, exists := s.users[userID]
+	return exists
+}
+
 func (s *UserStorage) UpdateUser(user *User) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

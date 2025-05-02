@@ -22,6 +22,11 @@ func SolveFirstChallenge(
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
+	isUserExist := storage.IsUserExist(req.Token)
+	if isUserExist {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "challenge already solved"})
+	}
+
 	userToken := req.Token
 	globalToken, err := rotatingToken.GetRotatingToken()
 	if err != nil {
