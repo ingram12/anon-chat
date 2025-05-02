@@ -17,7 +17,7 @@ type UserService struct {
 func NewUserService(cfg *config.Config) *UserService {
 	return &UserService{
 		cfg:           cfg,
-		storage:       users.NewUserStorage(),
+		storage:       users.NewUserStorage(cfg.UserInactivityTimeout),
 		rotatingToken: token.NewRotatingToken(cfg.SecondLifeTime),
 	}
 }

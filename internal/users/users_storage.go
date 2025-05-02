@@ -6,13 +6,15 @@ import (
 )
 
 type UserStorage struct {
-	mu    sync.RWMutex
-	users map[[36]byte]User
+	mu                    sync.RWMutex
+	users                 map[[36]byte]User
+	userInactivityTimeout int // in seconds
 }
 
-func NewUserStorage() *UserStorage {
+func NewUserStorage(userInactivityTimeout int) *UserStorage {
 	return &UserStorage{
-		users: make(map[[36]byte]User),
+		users:                 make(map[[36]byte]User),
+		userInactivityTimeout: userInactivityTimeout,
 	}
 }
 
