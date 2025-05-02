@@ -106,7 +106,7 @@
               "format": "int32",
               "description": "Difficulty level of the challenge",
               "minimum": 1,
-              "maximum": 99999
+              "maximum": 9999
             }
           },
           "required": [
@@ -141,7 +141,7 @@
               "format": "int32",
               "description": "Difficulty level of the challenge",
               "minimum": 1,
-              "maximum": 99999
+              "maximum": 9999
             }
           },
           "required": [
@@ -193,6 +193,7 @@
             },
             "tags": {
               "type": "array",
+              "maxItems": 10,
               "items": {
                 "description": "User's interest tags",
                 "type": "string",
@@ -211,7 +212,7 @@
               "format": "int32",
               "description": "Difficulty level of the solved challenge",
               "minimum": 1,
-              "maximum": 99999
+              "maximum": 9999
             }
           },
           "required": [
