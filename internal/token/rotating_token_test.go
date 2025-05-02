@@ -6,7 +6,7 @@ import (
 )
 
 func TestRotatingToken_GetRotatingToken(t *testing.T) {
-	token := NewRotatingToken(1) // Token expires in 1 second
+	token := NewRotatingToken(time.Second * 1) // Token expires in 1 second
 
 	// First call should generate a new token
 	token1, err := token.GetRotatingToken()
