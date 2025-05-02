@@ -22,7 +22,7 @@ func GetFirstChallenge(
 		return err
 	}
 
-	challenge := pow.GenerateChallenge(userToken, globalToken, cfg.TokenSecretKey)
+	challenge := pow.GenerateFirstChallenge(userToken, globalToken, cfg.TokenSecretKey)
 
 	resp := api.GetFirstChallengeResponse{
 		Challenge:  challenge,

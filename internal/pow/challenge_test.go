@@ -60,38 +60,3 @@ func TestSolveChallenge(t *testing.T) {
 		t.Errorf("VerifyChallengeNonce() failed for found solution: %v", solution)
 	}
 }
-
-func TestGenerateAndVerifyChallenge(t *testing.T) {
-	userKey := "testUser"
-	globalKey := "testGlobal"
-	secretKey := "testSecret"
-
-	challenge := GenerateChallenge(userKey, globalKey, secretKey)
-	if challenge == "" {
-		t.Error("GenerateChallenge() returned an empty string")
-	}
-
-	isValid := VerifyChallenge(userKey, globalKey, challenge, secretKey)
-	if !isValid {
-		t.Error("VerifyChallenge() returned false for a valid challenge")
-	}
-
-	// Test with a modified challenge
-	invalidChallenge := challenge + "modified"
-	isInvalid := VerifyChallenge(userKey, globalKey, invalidChallenge, secretKey)
-	if isInvalid {
-		t.Error("VerifyChallenge() returned true for an invalid challenge")
-	}
-
-	// Test with a different user key
-	isInvalid = VerifyChallenge("differentUser", globalKey, challenge, secretKey)
-	if isInvalid {
-		t.Error("VerifyChallenge() returned true for a challenge with a different user key")
-	}
-
-	// Test with a different global key
-	isInvalid = VerifyChallenge(userKey, "differentGlobal", challenge, secretKey)
-	if isInvalid {
-		t.Error("VerifyChallenge() returned true for a challenge with a different global key")
-	}
-}

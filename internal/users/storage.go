@@ -16,7 +16,7 @@ func NewUserStorage() *UserStorage {
 	}
 }
 
-func (s *UserStorage) CreateUser(userID, challenge string) (*User, error) {
+func (s *UserStorage) CreateUser(userID string) *User {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -24,16 +24,13 @@ func (s *UserStorage) CreateUser(userID, challenge string) (*User, error) {
 	copy(idBytes[:], userID)
 
 	user := &User{
-		ID:               idBytes,
-		CurrentChallenge: challenge,
-		CreatedAt:        time.Now(),
-		IsRegistered:     false,
+		ID:           idBytes,
+		CreatedAt:    time.Now(),
+		IsRegistered: false,
 	}
 
-	user.Difficulty = user.CalcDifficalty()
-
 	s.users[idBytes] = user
-	return user, nil
+	return user
 }
 
 func (s *UserStorage) GetUser(userID string) (*User, bool) {

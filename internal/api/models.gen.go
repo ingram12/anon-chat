@@ -15,7 +15,6 @@ type GetFirstChallengeResponse struct {
 
 // RegisterUserRequest Request to register a new user
 type RegisterUserRequest struct {
-	// Challenge The solved challenge string
 	Challenge string `json:"challenge"`
 
 	// Difficulty Difficulty level of the solved challenge
@@ -67,7 +66,6 @@ type SolveFirstChallengeResponse struct {
 
 	// Difficulty Difficulty level of the challenge
 	Difficulty int32  `json:"difficulty"`
-	Token      string `json:"token"`
 	UserId     string `json:"userId"`
 }
 

@@ -29,21 +29,8 @@ func SolveChallenge(challenge string, difficulty int) (string, error) {
 	return "", errors.New("could not find valid nonce within maxAttempts")
 }
 
-// Generates a challenge token based on the user key and the global temporary key
-func GenerateChallenge(userKey, globalKey, secretKey string) string {
-	return token.GenerateHMACToken(
-		globalKey+"|"+userKey,
-		secretKey,
-	)
-}
-
-// Returns true if the token was created by the server and its lifetime has not expired
-func VerifyChallenge(userKey, globalKey, hmacToken, secretKey string) bool {
-	return token.VerifyHMACToken(
-		globalKey+"|"+userKey,
-		hmacToken,
-		secretKey,
-	)
+func GenerateChallenge() string {
+	return token.RandomKey()
 }
 
 func VerifyFullChallenge(
@@ -66,7 +53,7 @@ func VerifyFullChallenge(
 		return errors.New("global token generation failed")
 	}
 
-	isVerified := VerifyChallenge(userToken, globalToken, challenge, secretKey)
+	isVerified := VerifyFirstChallenge(userToken, globalToken, challenge, secretKey)
 	if !isVerified {
 		return errors.New("challenge verification failed")
 	}

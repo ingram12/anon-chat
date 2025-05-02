@@ -164,11 +164,6 @@
               "minLength": 64,
               "maxLength": 64
             },
-            "token": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 64
-            },
             "difficulty": {
               "type": "integer",
               "format": "int32",
@@ -180,8 +175,7 @@
           "required": [
             "userId",
             "challenge",
-            "difficulty",
-            "token"
+            "difficulty"
           ]
         },
         "RegisterUserRequest": {
@@ -196,9 +190,8 @@
             },
             "challenge": {
               "type": "string",
-              "description": "The solved challenge string",
-              "minLength": 64,
-              "maxLength": 64
+              "minLength": 36,
+              "maxLength": 36
             },
             "nonce": {
               "type": "string",

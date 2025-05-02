@@ -32,7 +32,7 @@ func SolveFirstChallenge(
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": "global token generation failed"})
 	}
 
-	isVerified := pow.VerifyChallenge(userToken, globalToken, req.Challenge, cfg.TokenSecretKey)
+	isVerified := pow.VerifyFirstChallenge(userToken, globalToken, req.Challenge, cfg.TokenSecretKey)
 	if !isVerified {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "challenge verification failed"})
 	}
@@ -41,24 +41,16 @@ func SolveFirstChallenge(
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "invalid PoW nonce"})
 	}
 
-	newUserToken := token.GenerateUserToken()
-	newGlobalToken, err := rotatingToken.GetRotatingToken()
-	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
-	}
+	newChallenge := pow.GenerateChallenge()
 
-	newChallenge := pow.GenerateChallenge(newUserToken, newGlobalToken, cfg.TokenSecretKey)
-
-	user, err := storage.CreateUser(userToken, newChallenge)
-	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
-	}
+	user := storage.CreateUser(userToken)
+	user.CurrentChallenge = newChallenge
+	user.Difficulty = int(user.CalcDifficalty())
 
 	resp := api.SolveFirstChallengeResponse{
 		UserId:     string(user.ID[:]),
 		Challenge:  newChallenge,
 		Difficulty: int32(user.Difficulty),
-		Token:      newUserToken,
 	}
 	return ctx.JSON(http.StatusOK, resp)
 }

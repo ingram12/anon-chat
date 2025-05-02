@@ -27,7 +27,7 @@ func RegisterUser(ctx echo.Context, storage *users.UserStorage) error {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": ErrUserNotFound.Error()})
 	}
 
-	if user.CurrentChallenge != req.Challenge {
+	if user.CurrentChallenge != req.Challenge || user.Difficulty != int(req.Difficulty) {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": ErrInvalidChallenge.Error()})
 	}
 
