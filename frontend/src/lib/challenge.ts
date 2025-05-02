@@ -12,9 +12,6 @@ interface WorkerRequest {
 
 /**
  * Solves a challenge received from the server
- * @param challenge - Challenge to solve
- * @param difficulty - Challenge difficulty
- * @returns Promise with the solution
  */
 export async function solveChallenge(challenge: string, difficulty: number): Promise<string> {
   return new Promise((resolve, reject) => {

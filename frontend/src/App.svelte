@@ -8,13 +8,33 @@
     difficulty: number;
   }
 
+  interface RegisterUserRequest {
+    challenge: string;
+    token: string;
+    difficulty: number;
+    userId: string;
+    nonce: string;
+    nickname: string;
+    publicKey: string;
+    tags: string[];
+  }
+
+  interface SolveFirstChallengeResponse {
+    userId: string;
+    challenge: string;
+    token: string;
+    difficulty: number;
+  }
+
   let challenge: string = '';
   let difficulty: number = 0;
   let token: string = '';
   let userId: string = '';
   let error: string = ''; 
   let nonce: string = '';
-  let key: string = '';
+  let nickname: string = 'anon228';
+  let publicKey: string = 'key228';
+  let tags: string[] = [];
 
   async function getChallenge(): Promise<void> {
     try {
@@ -51,6 +71,47 @@
           nonce,
           difficulty,
           token,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: SolveFirstChallengeResponse = await response.json();
+      userId = data.userId;
+      challenge = data.challenge;
+      difficulty = data.difficulty;
+      token = data.token;
+      nonce = await solveChallenge(challenge, difficulty);
+
+      console.log('Solution submitted:', data);
+
+      setTimeout(() => {
+        registrationUser();
+      }, 0);
+    } catch (e) {
+      error = `Failed to submit solution: ${e instanceof Error ? e.message : String(e)}`;
+      console.error('Error submitting solution:', e);
+    }
+  }
+
+  async function registrationUser(): Promise<void> {
+    try {
+      const response = await fetch('http://localhost:8080/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          challenge,
+          nonce,
+          difficulty,
+          token,
+          userId,
+          nickname,
+          publicKey,
+          tags,
         }),
       });
 
