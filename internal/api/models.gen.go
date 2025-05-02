@@ -62,7 +62,13 @@ type SolveFirstChallengeRequest struct {
 
 // SolveFirstChallengeResponse Response after successful challenge solution
 type SolveFirstChallengeResponse struct {
-	UserId string `json:"userId"`
+	// Challenge The challenge string that was received
+	Challenge string `json:"challenge"`
+
+	// Difficulty Difficulty level of the challenge
+	Difficulty int32  `json:"difficulty"`
+	Token      string `json:"token"`
+	UserId     string `json:"userId"`
 }
 
 // SolveFirstChallengeJSONRequestBody defines body for SolveFirstChallenge for application/json ContentType.

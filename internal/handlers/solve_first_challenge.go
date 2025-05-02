@@ -22,8 +22,7 @@ func SolveFirstChallenge(
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
-	isUserExist := storage.IsUserExist(req.Token)
-	if isUserExist {
+	if storage.IsUserExist(req.Token) {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "challenge already solved"})
 	}
 
@@ -43,7 +42,6 @@ func SolveFirstChallenge(
 	}
 
 	newUserToken := token.GenerateUserToken()
-
 	newGlobalToken, err := rotatingToken.GetRotatingToken()
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
@@ -51,13 +49,16 @@ func SolveFirstChallenge(
 
 	newChallenge := pow.GenerateChallenge(newUserToken, newGlobalToken, cfg.TokenSecretKey)
 
-	user, err := storage.CreateUser(req.Token, newChallenge, int(req.Difficulty))
+	user, err := storage.CreateUser(userToken, newChallenge, int(req.Difficulty))
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
 
 	resp := api.SolveFirstChallengeResponse{
-		UserId: string(user.ID[:]),
+		UserId:     string(user.ID[:]),
+		Challenge:  newChallenge,
+		Difficulty: int32(req.Difficulty),
+		Token:      newUserToken,
 	}
 	return ctx.JSON(http.StatusOK, resp)
 }

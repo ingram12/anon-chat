@@ -2,6 +2,7 @@ package pow
 
 import (
 	"anon-chat/internal/token"
+	"anon-chat/internal/users"
 	"crypto/sha256"
 	"errors"
 	"fmt"
@@ -43,4 +44,36 @@ func VerifyChallenge(userKey, globalKey, hmacToken, secretKey string) bool {
 		hmacToken,
 		secretKey,
 	)
+}
+
+func VerifyFullChallenge(
+	challenge string,
+	nonce string,
+	token string,
+	difficulty int,
+	secretKey string,
+	storage *users.UserStorage,
+	rotatingToken *token.RotatingToken,
+) error {
+	isUserExist := storage.IsUserExist(token)
+	if isUserExist {
+		return errors.New("challenge already solved")
+	}
+
+	userToken := token
+	globalToken, err := rotatingToken.GetRotatingToken()
+	if err != nil {
+		return errors.New("global token generation failed")
+	}
+
+	isVerified := VerifyChallenge(userToken, globalToken, challenge, secretKey)
+	if !isVerified {
+		return errors.New("challenge verification failed")
+	}
+
+	if !VerifyChallengeNonce(challenge, nonce, int(difficulty)) {
+		return errors.New("invalid PoW nonce")
+	}
+
+	return nil
 }

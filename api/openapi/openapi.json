@@ -157,10 +157,31 @@
           "properties": {
             "userId": {
               "type": "string"
+            },
+            "challenge": {
+              "type": "string",
+              "description": "The challenge string that was received",
+              "minLength": 64,
+              "maxLength": 64
+            },
+            "token": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "difficulty": {
+              "type": "integer",
+              "format": "int32",
+              "description": "Difficulty level of the challenge",
+              "minimum": 1,
+              "maximum": 9999
             }
           },
           "required": [
-            "userId"
+            "userId",
+            "challenge",
+            "difficulty",
+            "token"
           ]
         },
         "RegisterUserRequest": {
