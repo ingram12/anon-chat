@@ -12,6 +12,7 @@ type User struct {
 	CurrentChallenge string
 	Difficulty       int
 	CreatedAt        time.Time
+	LastActivity     time.Time
 	IsRegistered     bool
 }
 

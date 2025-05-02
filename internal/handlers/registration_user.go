@@ -6,6 +6,7 @@ import (
 	"anon-chat/internal/users"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -44,6 +45,7 @@ func RegisterUser(ctx echo.Context, storage *users.UserStorage) error {
 	user.Tags = req.Tags
 	user.PublicKey = req.PublicKey
 	user.IsRegistered = true
+	user.LastActivity = time.Now()
 	storage.UpdateUser(user)
 
 	resp := api.RegisterUserResponse{

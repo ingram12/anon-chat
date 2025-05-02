@@ -23,9 +23,12 @@ func (s *UserStorage) CreateUser(userID string) User {
 	var idBytes [36]byte
 	copy(idBytes[:], userID)
 
+	timeNow := time.Now()
+
 	user := User{
 		ID:           idBytes,
-		CreatedAt:    time.Now(),
+		CreatedAt:    timeNow,
+		LastActivity: timeNow,
 		IsRegistered: false,
 	}
 
