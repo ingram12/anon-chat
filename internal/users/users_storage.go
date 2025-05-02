@@ -66,3 +66,18 @@ func (s *UserStorage) UpdateUser(user User) {
 
 	s.users[user.ID] = user
 }
+
+func (s *UserStorage) DeleteInactiveUsers() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	timeNow := time.Now()
+	for id, user := range s.users {
+		if user.IsRegistered {
+			continue
+		}
+		if timeNow.Sub(user.LastActivity) > time.Duration(s.userInactivityTimeout)*time.Second {
+			delete(s.users, id)
+		}
+	}
+}
