@@ -13,7 +13,7 @@ import (
 var (
 	ErrUserNotFound          = errors.New("user not found")
 	ErrInvalidChallenge      = errors.New("invalid challenge")
-	ErrInvalidSolution       = errors.New("invalid solution")
+	ErrInvalidNonce          = errors.New("invalid nonce")
 	ErrUserAlreadyRegistered = errors.New("user already registered")
 )
 
@@ -37,7 +37,7 @@ func RegisterUser(ctx echo.Context, storage *users.UserStorage) error {
 	}
 
 	if !pow.VerifyChallengeNonce(req.Challenge, req.Nonce, int(req.Difficulty)) {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": ErrInvalidSolution.Error()})
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": ErrInvalidNonce.Error()})
 	}
 
 	user.Nickname = req.Nickname
