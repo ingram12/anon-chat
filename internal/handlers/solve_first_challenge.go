@@ -57,7 +57,7 @@ func SolveFirstChallenge(
 	resp := api.SolveFirstChallengeResponse{
 		UserId:     string(user.ID[:]),
 		Challenge:  newChallenge,
-		Difficulty: int32(req.Difficulty),
+		Difficulty: int32(user.CalcDifficalty()),
 		Token:      newUserToken,
 	}
 	return ctx.JSON(http.StatusOK, resp)

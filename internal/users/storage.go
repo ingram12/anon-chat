@@ -5,17 +5,6 @@ import (
 	"time"
 )
 
-type User struct {
-	ID               [36]byte  `json:"user_id"`
-	Nickname         string    `json:"nickname,omitempty"`
-	Tags             []string  `json:"tags,omitempty"`
-	PublicKey        string    `json:"public_key,omitempty"`
-	CurrentChallenge string    `json:"current_challenge,omitempty"`
-	Difficulty       int       `json:"difficulty,omitempty"`
-	CreatedAt        time.Time `json:"created_at"`
-	IsRegistered     bool      `json:"is_registered"`
-}
-
 type UserStorage struct {
 	mu    sync.RWMutex
 	users map[[36]byte]*User
