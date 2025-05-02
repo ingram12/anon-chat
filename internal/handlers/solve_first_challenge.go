@@ -51,13 +51,13 @@ func SolveFirstChallenge(
 
 	newChallenge := pow.GenerateChallenge(newUserToken, newGlobalToken, cfg.TokenSecretKey)
 
-	user, err := storage.CreateUser(newChallenge, int(req.Difficulty))
+	user, err := storage.CreateUser(req.Token, newChallenge, int(req.Difficulty))
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
 
 	resp := api.SolveFirstChallengeResponse{
-		UserId: user.ID,
+		UserId: string(user.ID[:]),
 	}
 	return ctx.JSON(http.StatusOK, resp)
 }

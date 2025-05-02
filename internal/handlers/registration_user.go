@@ -42,7 +42,7 @@ func RegisterUser(ctx echo.Context, storage *users.UserStorage) error {
 	storage.UpdateUser(user)
 
 	resp := api.RegisterUserResponse{
-		UserId:  user.ID,
+		UserId:  string(user.ID[:]),
 		Success: true,
 		Message: "User registered successfully",
 	}

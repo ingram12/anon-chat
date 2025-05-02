@@ -3,12 +3,10 @@ package users
 import (
 	"sync"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type User struct {
-	ID               string    `json:"user_id"`
+	ID               [36]byte  `json:"user_id"`
 	Nickname         string    `json:"nickname,omitempty"`
 	Tags             []string  `json:"tags,omitempty"`
 	PublicKey        string    `json:"public_key,omitempty"`
@@ -20,30 +18,31 @@ type User struct {
 
 type UserStorage struct {
 	mu    sync.RWMutex
-	users map[string]*User
+	users map[[36]byte]*User
 }
 
 func NewUserStorage() *UserStorage {
 	return &UserStorage{
-		users: make(map[string]*User),
+		users: make(map[[36]byte]*User),
 	}
 }
 
-func (s *UserStorage) CreateUser(challenge string, difficulty int) (*User, error) {
+func (s *UserStorage) CreateUser(userID, challenge string, difficulty int) (*User, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	userID := uuid.NewString()
+	var idBytes [36]byte
+	copy(idBytes[:], userID)
 
 	user := &User{
-		ID:               userID,
+		ID:               idBytes,
 		CurrentChallenge: challenge,
 		Difficulty:       difficulty,
 		CreatedAt:        time.Now(),
 		IsRegistered:     false,
 	}
 
-	s.users[userID] = user
+	s.users[idBytes] = user
 	return user, nil
 }
 
@@ -51,7 +50,10 @@ func (s *UserStorage) GetUser(userID string) (*User, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	user, exists := s.users[userID]
+	var idBytes [36]byte
+	copy(idBytes[:], userID)
+
+	user, exists := s.users[idBytes]
 	return user, exists
 }
 
@@ -59,7 +61,10 @@ func (s *UserStorage) IsUserExist(userID string) bool {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	_, exists := s.users[userID]
+	var idBytes [36]byte
+	copy(idBytes[:], userID)
+
+	_, exists := s.users[idBytes]
 	return exists
 }
 
