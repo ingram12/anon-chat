@@ -16,7 +16,7 @@ type User struct {
 }
 
 func (u *User) CalcDifficalty() int {
-	if u.IsRegistered {
+	if !u.IsRegistered {
 		return 300
 	}
 
