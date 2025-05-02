@@ -46,6 +46,9 @@ func SolveFirstChallenge(
 	user := storage.CreateUser(userToken)
 	user.CurrentChallenge = newChallenge
 	user.Difficulty = int(user.CalcDifficalty())
+	user.IsRegistered = false
+
+	storage.UpdateUser(user)
 
 	resp := api.SolveFirstChallengeResponse{
 		UserId:     string(user.ID[:]),

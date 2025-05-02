@@ -11,9 +11,10 @@ import (
 )
 
 var (
-	ErrUserNotFound     = errors.New("user not found")
-	ErrInvalidChallenge = errors.New("invalid challenge")
-	ErrInvalidSolution  = errors.New("invalid solution")
+	ErrUserNotFound          = errors.New("user not found")
+	ErrInvalidChallenge      = errors.New("invalid challenge")
+	ErrInvalidSolution       = errors.New("invalid solution")
+	ErrUserAlreadyRegistered = errors.New("user already registered")
 )
 
 func RegisterUser(ctx echo.Context, storage *users.UserStorage) error {
@@ -25,6 +26,10 @@ func RegisterUser(ctx echo.Context, storage *users.UserStorage) error {
 	user, exists := storage.GetUser(req.UserId)
 	if !exists {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": ErrUserNotFound.Error()})
+	}
+
+	if user.IsRegistered {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": ErrUserAlreadyRegistered.Error()})
 	}
 
 	if user.CurrentChallenge != req.Challenge || user.Difficulty != int(req.Difficulty) {
