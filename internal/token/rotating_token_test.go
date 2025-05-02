@@ -40,10 +40,10 @@ func TestRotatingToken_GetRotatingToken(t *testing.T) {
 }
 
 func TestNewRotatingToken(t *testing.T) {
-	lifetime := 60 // seconds
+	lifetime := 60 * time.Second // seconds
 	token := NewRotatingToken(lifetime)
 
-	if token.lifetime != time.Duration(lifetime)*time.Second {
-		t.Errorf("Expected lifetime to be %v, got %v", time.Duration(lifetime)*time.Second, token.lifetime)
+	if token.lifetime != lifetime {
+		t.Errorf("Expected lifetime to be %v, got %v", lifetime, token.lifetime)
 	}
 }

@@ -1,12 +1,15 @@
 package config
 
-import "os"
+import (
+	"os"
+	"time"
+)
 
 type Config struct {
 	TokenSecretKey           string
 	FirstChallengeDifficulty int
-	SecondLifeTime           int
-	UserInactivityTimeout    int // in seconds
+	RotatingTokenLifeTime    time.Duration
+	UserInactivityTimeout    time.Duration
 }
 
 func NewConfig() *Config {
@@ -19,7 +22,7 @@ func NewConfig() *Config {
 	return &Config{
 		TokenSecretKey:           secretKey,
 		FirstChallengeDifficulty: 300,
-		SecondLifeTime:           120,
-		UserInactivityTimeout:    1800,
+		RotatingTokenLifeTime:    120 * time.Second,
+		UserInactivityTimeout:    1800 * time.Second,
 	}
 }

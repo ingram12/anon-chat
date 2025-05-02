@@ -12,9 +12,9 @@ type RotatingToken struct {
 	lifetime  time.Duration
 }
 
-func NewRotatingToken(secondLifeTime int) *RotatingToken {
+func NewRotatingToken(lifeTime time.Duration) *RotatingToken {
 	return &RotatingToken{
-		lifetime: time.Duration(secondLifeTime) * time.Second,
+		lifetime: lifeTime,
 	}
 }
 

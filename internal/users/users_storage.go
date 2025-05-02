@@ -8,10 +8,10 @@ import (
 type UserStorage struct {
 	mu                    sync.RWMutex
 	users                 map[[36]byte]User
-	userInactivityTimeout int // in seconds
+	userInactivityTimeout time.Duration
 }
 
-func NewUserStorage(userInactivityTimeout int) *UserStorage {
+func NewUserStorage(userInactivityTimeout time.Duration) *UserStorage {
 	return &UserStorage{
 		users:                 make(map[[36]byte]User),
 		userInactivityTimeout: userInactivityTimeout,
@@ -73,10 +73,7 @@ func (s *UserStorage) DeleteInactiveUsers() {
 
 	timeNow := time.Now()
 	for id, user := range s.users {
-		if user.IsRegistered {
-			continue
-		}
-		if timeNow.Sub(user.LastActivity) > time.Duration(s.userInactivityTimeout)*time.Second {
+		if timeNow.Sub(user.LastActivity) > s.userInactivityTimeout {
 			delete(s.users, id)
 		}
 	}
