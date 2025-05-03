@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"anon-chat/internal/chat"
 	"anon-chat/internal/config"
 	"anon-chat/internal/token"
 	"anon-chat/internal/users"
@@ -12,6 +13,7 @@ type UserService struct {
 	cfg           *config.Config
 	storage       *users.UserStorage
 	rotatingToken *token.RotatingToken
+	chatStorage   *chat.Storage
 }
 
 func NewUserService(cfg *config.Config) *UserService {
@@ -19,6 +21,7 @@ func NewUserService(cfg *config.Config) *UserService {
 		cfg:           cfg,
 		storage:       users.NewUserStorage(cfg.UserInactivityTimeout),
 		rotatingToken: token.NewRotatingToken(cfg.RotatingTokenLifeTime),
+		chatStorage:   chat.NewChatStorage(),
 	}
 }
 
@@ -32,4 +35,8 @@ func (s *UserService) SolveFirstChallenge(ctx echo.Context) error {
 
 func (s *UserService) RegisterUser(ctx echo.Context) error {
 	return RegisterUser(ctx, s.storage)
+}
+
+func (s *UserService) WaitForChat(ctx echo.Context, userID string) error {
+	return WaitForChat(ctx, userID, s.storage, s.chatStorage)
 }

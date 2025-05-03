@@ -4,7 +4,11 @@
 package api
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
+	"github.com/oapi-codegen/runtime"
 )
 
 // ServerInterface represents all server handlers.
@@ -18,6 +22,9 @@ type ServerInterface interface {
 	// Register New User
 	// (POST /users/register)
 	RegisterUser(ctx echo.Context) error
+	// Wait for Chat
+	// (GET /users/waitChat/{userId})
+	WaitForChat(ctx echo.Context, userId string) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -52,6 +59,22 @@ func (w *ServerInterfaceWrapper) RegisterUser(ctx echo.Context) error {
 	return err
 }
 
+// WaitForChat converts echo context to params.
+func (w *ServerInterfaceWrapper) WaitForChat(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "userId", ctx.Param("userId"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.WaitForChat(ctx, userId)
+	return err
+}
+
 // This is a simple interface which specifies echo.Route addition functions which
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
@@ -83,5 +106,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/challenge/first", wrapper.GetFirstChallenge)
 	router.POST(baseURL+"/challenge/solve", wrapper.SolveFirstChallenge)
 	router.POST(baseURL+"/users/register", wrapper.RegisterUser)
+	router.GET(baseURL+"/users/waitChat/:userId", wrapper.WaitForChat)
 
 }

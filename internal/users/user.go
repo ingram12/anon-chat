@@ -14,6 +14,7 @@ type User struct {
 	CreatedAt        time.Time
 	LastActivity     time.Time
 	IsRegistered     bool
+	ChatID           int // ID of the chat in which the user is currently participating
 }
 
 func (u *User) CalcDifficalty() int {

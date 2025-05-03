@@ -82,6 +82,38 @@
             }
           }
         }
+      },
+      "/users/waitChat/{userId}": {
+        "get": {
+          "summary": "Wait for Chat",
+          "description": "Wait for a chat to be assigned to the user. This endpoint is used to check if a chat is available.",
+          "operationId": "WaitForChat",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "path",
+              "required": true,
+              "description": "The ID of the user waiting for a chat",
+              "schema": {
+                "type": "string",
+                "minLength": 36,
+                "maxLength": 36
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response indicating chat assignment",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/WaitForChatResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "components": {
@@ -263,6 +295,31 @@
             "userId",
             "success",
             "message"
+          ]
+        },
+        "WaitForChatResponse": {
+          "type": "object",
+          "description": "Response indicating chat assignment",
+          "properties": {
+            "status": {
+              "type": "string",
+              "description": "Status of the chat assignment",
+              "enum": [
+                "assigned",
+                "waiting"
+              ]
+            },
+            "peerPublicKey": {
+              "type": "string",
+              "description": "Public key of the assigned chat peer",
+              "minLength": 1,
+              "maxLength": 512,
+              "nullable": true
+            }
+          },
+          "required": [
+            "status",
+            "peerPublicKey"
           ]
         }
       }
