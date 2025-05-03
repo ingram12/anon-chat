@@ -25,3 +25,6 @@ linters-settings:
     config: revive.toml
   gofmt:
     simplify: true
+  gocritic:
+    disabled-checks:
+      - ifElseChain
