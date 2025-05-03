@@ -76,3 +76,11 @@ export async function waitChat(userId: string): Promise<any> {
     }
     return await response.json();
 }
+
+export async function updateChat(userId: string): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/chat/update/${userId}`);
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+}

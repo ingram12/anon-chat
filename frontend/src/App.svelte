@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { solveChallenge } from './lib/challenge';
-  import { getFirstChallenge, solveFirstChallenge, registerUser, waitChat } from './lib/api';
+  import { getFirstChallenge, solveFirstChallenge, registerUser, waitChat, updateChat } from './lib/api';
   import { E2ECryptoHandler } from './lib/e2e-crypto';
 
   let challenge: string = '';
@@ -73,6 +73,9 @@
 
       const chatData = await waitChat(userId);
       console.log('Chat connection:', chatData);
+
+      const upData = await updateChat(userId);
+      console.log('Chat connection:', upData);
     } catch (e) {
       error = `Error in authentication flow: ${e instanceof Error ? e.message : String(e)}`;
       console.error('Error:', e);
