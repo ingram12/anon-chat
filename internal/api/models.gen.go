@@ -38,6 +38,12 @@ type GetFirstChallengeResponse struct {
 	Token      string `json:"token"`
 }
 
+// QuitChatResponse Response after quitting a chat
+type QuitChatResponse struct {
+	// Success Whether the chat was successfully quit
+	Success bool `json:"success"`
+}
+
 // RegisterUserRequest Request to register a new user
 type RegisterUserRequest struct {
 	Challenge string `json:"challenge"`
