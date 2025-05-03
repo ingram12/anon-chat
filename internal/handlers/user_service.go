@@ -48,3 +48,7 @@ func (s *UserService) WaitForChat(ctx echo.Context, userID string) error {
 func (s *UserService) UpdateChat(ctx echo.Context, userID string) error {
 	return UpdateChat(ctx, userID, s.storage, s.chatStorage)
 }
+
+func (s *UserService) SendChatMessage(ctx echo.Context, userID string) error {
+	return SendChatMessage(ctx, userID, s.storage, s.chatStorage)
+}

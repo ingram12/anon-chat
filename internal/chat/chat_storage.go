@@ -89,3 +89,30 @@ func (s *Storage) RemovePeerMessages(chatID int, userID [36]byte) error {
 
 	return nil
 }
+
+func (s *Storage) AddMessage(chatID int, userID [36]byte, message string) (time.Time, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	chat, exists := s.chats[chatID]
+	if !exists {
+		return time.Time{}, ErrChatNotFound
+	}
+
+	timeNow := time.Now()
+	if chat.UserID1 == userID {
+		chat.User1Messages = append(chat.User1Messages, Message{
+			CreatedAt: timeNow,
+			Message:   message,
+		})
+	} else if chat.UserID2 == userID {
+		chat.User2Messages = append(chat.User2Messages, Message{
+			CreatedAt: timeNow,
+			Message:   message,
+		})
+	} else {
+		return time.Time{}, errors.New("user not in chat")
+	}
+
+	return timeNow, nil
+}
