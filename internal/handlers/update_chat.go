@@ -33,6 +33,7 @@ func UpdateChat(ctx echo.Context, userID string, storage *users.UserStorage, cha
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "failed to get messages"})
 	}
+	chatStorage.RemovePeerMessages(chatID, user.ID)
 
 	respMessages := make([]api.ChatMessage, len(messages))
 	for i, msg := range messages {

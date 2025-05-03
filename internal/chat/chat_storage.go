@@ -66,7 +66,9 @@ func (s *Storage) GetPeerMessages(chatID int, userID [36]byte) ([]Message, error
 		return []Message{}, ErrChatNotFound
 	}
 
-	return chat.GetPeerMessages(userID), nil
+	messages := chat.GetPeerMessages(userID)
+
+	return messages, nil
 }
 
 func (s *Storage) RemovePeerMessages(chatID int, userID [36]byte) error {
@@ -79,9 +81,9 @@ func (s *Storage) RemovePeerMessages(chatID int, userID [36]byte) error {
 	}
 
 	if chat.UserID1 == userID {
-		chat.User1Messages = []Message{}
-	} else if chat.UserID2 == userID {
 		chat.User2Messages = []Message{}
+	} else if chat.UserID2 == userID {
+		chat.User1Messages = []Message{}
 	} else {
 		return errors.New("user not in chat")
 	}
