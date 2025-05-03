@@ -26,21 +26,14 @@ func (s *Storage) CreateChat(userID1, userID2 [36]byte) (*Chat, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	messages := []Message{
-		{
-			CreatedAt: time.Now(),
-			Message:   "Chat created",
-		},
-	}
-
 	s.lastID++
 	chat := &Chat{
 		ID:            s.lastID,
 		CreatedAt:     time.Now(),
 		UserID1:       userID1,
 		UserID2:       userID2,
-		User1Messages: messages, // []Message{},
-		User2Messages: messages, // []Message{},
+		User1Messages: []Message{},
+		User2Messages: []Message{},
 	}
 	s.chats[chat.ID] = chat
 	return chat, nil
