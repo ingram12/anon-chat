@@ -93,8 +93,6 @@ func (s *UserStorage) MatchUsersIntoChats(chatStorage *chat.Storage) {
 
 		users := s.GetUsersWithoutChat()
 
-		log.Printf("Found %d users without chat\n", len(users))
-
 		if len(users) < 2 {
 			s.mu.Unlock()
 			continue
