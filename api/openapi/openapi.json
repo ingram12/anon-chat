@@ -190,7 +190,7 @@
         }
       },
       "/chat/quit/{userId}": {
-        "post": {
+        "get": {
           "summary": "Quit Chat",
           "description": "Leave the current chat session.",
           "operationId": "QuitChat",
