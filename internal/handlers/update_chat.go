@@ -25,8 +25,8 @@ func UpdateChat(ctx echo.Context, userID string, storage *users.UserStorage, cha
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "chat not found"})
 	}
 
-	if chat.IsUserInChat(user.ID) {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not in chat 1"})
+	if !chat.IsUserInChat(user.ID) {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not in chat"})
 	}
 
 	messages, err := chatStorage.GetPeerMessages(chatID, user.ID)
