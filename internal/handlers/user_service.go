@@ -25,7 +25,6 @@ func NewUserService(cfg *config.Config) *UserService {
 	}
 
 	go userService.storage.MatchUsersIntoChats(userService.chatStorage)
-
 	return &userService
 }
 
@@ -51,4 +50,8 @@ func (s *UserService) UpdateChat(ctx echo.Context, userID string) error {
 
 func (s *UserService) SendChatMessage(ctx echo.Context, userID string) error {
 	return SendChatMessage(ctx, userID, s.storage, s.chatStorage)
+}
+
+func (s *UserService) QuitChat(ctx echo.Context, userID string) error {
+	return QuitChat(ctx, userID, s.storage, s.chatStorage)
 }
