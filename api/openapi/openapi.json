@@ -315,11 +315,19 @@
               "minLength": 1,
               "maxLength": 512,
               "nullable": true
+            },
+            "nickname": {
+              "type": "string",
+              "description": "Nickname of the assigned chat peer",
+              "minLength": 1,
+              "maxLength": 128,
+              "nullable": true
             }
           },
           "required": [
             "status",
-            "peerPublicKey"
+            "peerPublicKey",
+            "nickname"
           ]
         }
       }

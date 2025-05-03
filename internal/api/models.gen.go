@@ -77,6 +77,9 @@ type SolveFirstChallengeResponse struct {
 
 // WaitForChatResponse Response indicating chat assignment
 type WaitForChatResponse struct {
+	// Nickname Nickname of the assigned chat peer
+	Nickname *string `json:"nickname"`
+
 	// PeerPublicKey Public key of the assigned chat peer
 	PeerPublicKey *string `json:"peerPublicKey"`
 
