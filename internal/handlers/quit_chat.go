@@ -24,6 +24,8 @@ func QuitChat(ctx echo.Context, userID string, storage *users.UserStorage, chatS
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "failed to quit chat"})
 	}
+	user.ChatID = 0
+	storage.UpdateUser(user)
 
 	resp := api.QuitChatResponse{
 		Success: true,
