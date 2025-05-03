@@ -116,3 +116,23 @@ func (s *Storage) AddMessage(chatID int, userID [36]byte, message string) (time.
 
 	return timeNow, nil
 }
+
+func (s *Storage) QuitChat(chatID int, userID [36]byte) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	chat, exists := s.chats[chatID]
+	if !exists {
+		return ErrChatNotFound
+	}
+
+	if chat.UserID1 == userID {
+		chat.UserID1 = [36]byte{}
+	} else if chat.UserID2 == userID {
+		chat.UserID2 = [36]byte{}
+	} else {
+		return errors.New("user not in chat")
+	}
+
+	return nil
+}
