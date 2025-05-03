@@ -114,6 +114,38 @@
             }
           }
         }
+      },
+      "/chat/update/{userId}": {
+        "get": {
+          "summary": "Update Chat",
+          "description": "Check for updates in the chat. This endpoint is used to retrieve new messages or chat status.",
+          "operationId": "UpdateChat",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "path",
+              "required": true,
+              "description": "The ID of the user checking for chat updates",
+              "schema": {
+                "type": "string",
+                "minLength": 36,
+                "maxLength": 36
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response with chat updates",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UpdateChatResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "components": {
@@ -328,6 +360,30 @@
             "status",
             "peerPublicKey",
             "nickname"
+          ]
+        },
+        "UpdateChatResponse": {
+          "type": "object",
+          "description": "Response containing chat updates",
+          "properties": {
+            "messages": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ChatMessage"
+              }
+            },
+            "status": {
+              "type": "string",
+              "description": "Status of the chat",
+              "enum": [
+                "active",
+                "closed"
+              ]
+            }
+          },
+          "required": [
+            "messages",
+            "status"
           ]
         }
       }
