@@ -385,6 +385,27 @@
             "messages",
             "status"
           ]
+        },
+        "ChatMessage": {
+          "type": "object",
+          "description": "Chat message object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "Content of the chat message",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp of when the message was sent"
+            }
+          },
+          "required": [
+            "senderId",
+            "message"
+          ]
         }
       }
     }
