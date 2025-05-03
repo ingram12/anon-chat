@@ -62,6 +62,7 @@ func WaitForChat(ctx echo.Context, userID string, storage *users.UserStorage, ch
 	resp := api.WaitForChatResponse{
 		Status:        "waiting",
 		PeerPublicKey: nil,
+		Nickname:      nil,
 	}
 	return ctx.JSON(http.StatusOK, resp)
 }
