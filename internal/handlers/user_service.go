@@ -14,6 +14,7 @@ type UserService struct {
 	storage       *users.UserStorage
 	rotatingToken *token.RotatingToken
 	chatStorage   *chat.Storage
+	waitingQueue  *users.WaitingQueue
 }
 
 func NewUserService(cfg *config.Config) *UserService {
@@ -21,10 +22,10 @@ func NewUserService(cfg *config.Config) *UserService {
 		cfg:           cfg,
 		storage:       users.NewUserStorage(cfg.UserInactivityTimeout),
 		rotatingToken: token.NewRotatingToken(cfg.RotatingTokenLifeTime),
+		waitingQueue:  users.NewWaitingQueue(),
 		chatStorage:   chat.NewChatStorage(),
 	}
 
-	go userService.storage.MatchUsersIntoChats(userService.chatStorage)
 	return &userService
 }
 
@@ -41,7 +42,7 @@ func (s *UserService) RegisterUser(ctx echo.Context) error {
 }
 
 func (s *UserService) WaitForChat(ctx echo.Context, userID string) error {
-	return WaitForChat(ctx, userID, s.storage, s.chatStorage)
+	return WaitForChat(ctx, userID, s.storage, s.chatStorage, s.waitingQueue)
 }
 
 func (s *UserService) UpdateChat(ctx echo.Context, userID string) error {

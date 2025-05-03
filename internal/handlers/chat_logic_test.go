@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"testing"
 	"time"
 
@@ -133,7 +134,7 @@ func (tc *testContext) waitForChat(userID string) api.WaitForChatResponse {
 	ctx.SetParamNames("userId")
 	ctx.SetParamValues(userID)
 
-	err := WaitForChat(ctx, userID, tc.userService.storage, tc.userService.chatStorage)
+	err := WaitForChat(ctx, userID, tc.userService.storage, tc.userService.chatStorage, tc.userService.waitingQueue)
 	if err != nil {
 		tc.t.Fatalf("Failed to wait for chat: %v", err)
 	}
@@ -232,11 +233,18 @@ func TestChatFlow(t *testing.T) {
 	solveResp2 := tc.solveFirstChallenge(response2)
 	regResp2 := tc.registerUser(solveResp2)
 
-	time.Sleep(500 * time.Millisecond) // Ensure some time has passed for chat matching
-
 	// Wait for chat
-	tc.waitForChat(regResp1.UserId)
-	tc.waitForChat(regResp2.UserId)
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		tc.waitForChat(regResp1.UserId)
+	}()
+	go func() {
+		defer wg.Done()
+		tc.waitForChat(regResp2.UserId)
+	}()
+	wg.Wait()
 
 	// Update chat
 	updateResp1 := tc.updateChat(regResp1.UserId)
@@ -260,7 +268,17 @@ func TestChatFlow(t *testing.T) {
 	tc.quitChat(regResp1.UserId)
 	tc.quitChat(regResp2.UserId)
 
-	time.Sleep(500 * time.Millisecond) // Ensure some time has passed for chat quitting
+	// Wait for chat
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		tc.waitForChat(regResp1.UserId)
+	}()
+	go func() {
+		defer wg.Done()
+		tc.waitForChat(regResp2.UserId)
+	}()
+	wg.Wait()
 
 	tc.sendChatMessage(regResp1.UserId, "Hello from user 1")
 
@@ -269,6 +287,7 @@ func TestChatFlow(t *testing.T) {
 		t.Error("Expected zero messages")
 	}
 
+	time.Sleep(100 * time.Millisecond)
 	updateResp2 = tc.updateChat(regResp2.UserId)
 	if len(updateResp2.Messages) == 0 {
 		t.Error("Expected messages in update response for user 2")

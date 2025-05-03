@@ -10,10 +10,23 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func WaitForChat(ctx echo.Context, userID string, storage *users.UserStorage, chatStorage *chat.Storage) error {
-	if !storage.IsUserExist(userID) {
+func WaitForChat(
+	ctx echo.Context,
+	userID string,
+	storage *users.UserStorage,
+	chatStorage *chat.Storage,
+	waitingQueue *users.WaitingQueue,
+) error {
+	user, exist := storage.GetUser(userID)
+	if !exist {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 	}
+	if user.ChatID != 0 {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User already in chat"})
+	}
+
+	waitingQueue.AddUser(user.ID)
+	defer waitingQueue.RemoveUser(user.ID)
 
 	waitChan := make(chan int, 1)
 
@@ -26,6 +39,7 @@ func WaitForChat(ctx echo.Context, userID string, storage *users.UserStorage, ch
 			case <-ctx.Request().Context().Done():
 				return
 			case <-ticker.C:
+				waitingQueue.TryMatch(chatStorage, storage)
 				user, _ := storage.GetUser(userID)
 				if user.ChatID != 0 {
 					waitChan <- user.ChatID
