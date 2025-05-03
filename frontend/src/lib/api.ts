@@ -68,3 +68,11 @@ export async function registerUser(params: RegisterUserRequest): Promise<any> {
 
     return await response.json();
 }
+
+export async function waitChat(userId: string): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/users/waitChat/${userId}`);
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+}

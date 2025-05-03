@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { solveChallenge } from './lib/challenge';
-  import { getFirstChallenge, solveFirstChallenge, registerUser } from './lib/api';
-    import { E2ECryptoHandler } from './lib/e2e-crypto';
+  import { getFirstChallenge, solveFirstChallenge, registerUser, waitChat } from './lib/api';
+  import { E2ECryptoHandler } from './lib/e2e-crypto';
 
   let challenge: string = '';
   let difficulty: number = 0;
@@ -14,87 +14,73 @@
   let publicKey: string = 'key228';
   let tags: string[] = [];
 
-  // export enum UserStage {
-  //   Idle = 'Idle',                       // только что зашел
-  //   ChallengeSolved = 'ChallengeSolved', // решил PoW, получил UserId
-  //   Registered = 'Registered',           // зарегистрирован, ищет собеседника
-  //   Connected = 'Connected',             // подключен к собеседнику
-  // }
-
-  // let state = {
-  //   stage: UserStage = UserStage.Idle,
-  // }
-
   async function getChallenge(): Promise<void> {
-    try {
-      const data = await getFirstChallenge();
-      challenge = data.challenge;
-      difficulty = data.difficulty;
-      token = data.token;
-      nonce = await solveChallenge(challenge, difficulty);
+    const data = await getFirstChallenge();
+    challenge = data.challenge;
+    difficulty = data.difficulty;
+    token = data.token;
+    nonce = await solveChallenge(challenge, difficulty);
 
-      console.log(data);
-      error = '';
-      setTimeout(() => {
-        submitSolution();
-      }, 0);
-    } catch (e) {
-      error = `Failed to get challenge: ${e instanceof Error ? e.message : String(e)}`;
-      console.error('Error getting challenge:', e);
-    }
+    console.log('Challenge received:', data);
+    error = '';
   }
 
   async function submitSolution(): Promise<void> {
-    try {
-      const data = await solveFirstChallenge({
-        challenge,
-        nonce,
-        difficulty,
-        token,
-      });
+    const data = await solveFirstChallenge({
+      challenge,
+      nonce,
+      difficulty,
+      token,
+    });
 
-      userId = data.userId;
-      challenge = data.challenge;
-      difficulty = data.difficulty;
-      token = data.token;
-      nonce = await solveChallenge(challenge, difficulty);
+    userId = data.userId;
+    challenge = data.challenge;
+    difficulty = data.difficulty;
+    token = data.token;
+    nonce = await solveChallenge(challenge, difficulty);
 
-      console.log('Solution submitted:', data);
-
-      setTimeout(() => {
-        registrationUser();
-      }, 0);
-    } catch (e) {
-      error = `Failed to submit solution: ${e instanceof Error ? e.message : String(e)}`;
-      console.error('Error submitting solution:', e);
-    }
+    console.log('Solution submitted:', data);
   }
 
   async function registrationUser(): Promise<void> {
     const keys = new E2ECryptoHandler();
     await keys.generateKeyPair();
 
-    try {
-      const data = await registerUser({
-        challenge,
-        nonce,
-        difficulty,
-        token,
-        userId,
-        nickname,
-        publicKey: keys.publicKeyBase64,
-        tags,
-      });
+    const data = await registerUser({
+      challenge,
+      nonce,
+      difficulty,
+      token,
+      userId,
+      nickname,
+      publicKey: keys.publicKeyBase64,
+      tags,
+    });
 
-      console.log('Registration submitted:', data);
+    console.log('Registration submitted:', data);
+  }
+
+  async function run(): Promise<void> {
+    try {
+      // Step 1: Get and solve initial challenge
+      await getChallenge();
+      
+      // Step 2: Submit solution and get user ID
+      await submitSolution();
+      
+      // Step 3: Register user and wait for chat
+      await registrationUser();
+
+      const chatData = await waitChat(userId);
+      console.log('Chat connection:', chatData);
     } catch (e) {
-      error = `Failed to register user: ${e instanceof Error ? e.message : String(e)}`;
-      console.error('Error registering user:', e);
+      error = `Error in authentication flow: ${e instanceof Error ? e.message : String(e)}`;
+      console.error('Error:', e);
     }
   }
 
   onMount(() => {
-    getChallenge();
+    run();
   });
 </script>
 
