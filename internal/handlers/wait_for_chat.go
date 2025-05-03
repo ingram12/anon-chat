@@ -70,13 +70,17 @@ func WaitForChat(ctx echo.Context, userID string, storage *users.UserStorage, ch
 			PeerPublicKey: nil,
 		}
 		return ctx.JSON(http.StatusOK, resp)
-	case <-time.After(20 * time.Second):
+	case <-time.After(4 * time.Second):
 		resp := api.WaitForChatResponse{
 			Status:        "waiting",
 			PeerPublicKey: nil,
 		}
 		return ctx.JSON(http.StatusOK, resp)
 	case <-ctx.Request().Context().Done():
-		return nil
+		resp := api.WaitForChatResponse{
+			Status:        "waiting",
+			PeerPublicKey: nil,
+		}
+		return ctx.JSON(http.StatusOK, resp)
 	}
 }
