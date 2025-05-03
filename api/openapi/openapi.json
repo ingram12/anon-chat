@@ -188,6 +188,38 @@
             }
           }
         }
+      },
+      "/chat/quit/{userId}": {
+        "post": {
+          "summary": "Quit Chat",
+          "description": "Leave the current chat session.",
+          "operationId": "QuitChat",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "path",
+              "required": true,
+              "description": "The ID of the user quitting the chat",
+              "schema": {
+                "type": "string",
+                "minLength": 36,
+                "maxLength": 36
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successfully quit the chat",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/QuitChatResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "components": {
@@ -481,6 +513,19 @@
           "required": [
             "success",
             "timestamp"
+          ]
+        },
+        "QuitChatResponse": {
+          "type": "object",
+          "description": "Response after quitting a chat",
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "description": "Whether the chat was successfully quit"
+            }
+          },
+          "required": [
+            "success"
           ]
         }
       }
