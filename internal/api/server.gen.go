@@ -19,6 +19,9 @@ type ServerInterface interface {
 	// Solve First Challenge
 	// (POST /challenge/solve)
 	SolveFirstChallenge(ctx echo.Context) error
+	// Send Chat Message
+	// (POST /chat/message/send/{userId})
+	SendChatMessage(ctx echo.Context, userId string) error
 	// Update Chat
 	// (GET /chat/update/{userId})
 	UpdateChat(ctx echo.Context, userId string) error
@@ -50,6 +53,22 @@ func (w *ServerInterfaceWrapper) SolveFirstChallenge(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.SolveFirstChallenge(ctx)
+	return err
+}
+
+// SendChatMessage converts echo context to params.
+func (w *ServerInterfaceWrapper) SendChatMessage(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "userId", ctx.Param("userId"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.SendChatMessage(ctx, userId)
 	return err
 }
 
@@ -124,6 +143,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 	router.GET(baseURL+"/challenge/first", wrapper.GetFirstChallenge)
 	router.POST(baseURL+"/challenge/solve", wrapper.SolveFirstChallenge)
+	router.POST(baseURL+"/chat/message/send/:userId", wrapper.SendChatMessage)
 	router.GET(baseURL+"/chat/update/:userId", wrapper.UpdateChat)
 	router.POST(baseURL+"/users/register", wrapper.RegisterUser)
 	router.GET(baseURL+"/users/waitChat/:userId", wrapper.WaitForChat)

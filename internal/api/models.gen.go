@@ -71,6 +71,21 @@ type RegisterUserResponse struct {
 	UserId string `json:"userId"`
 }
 
+// SendChatMessageRequest Request to send a new chat message
+type SendChatMessageRequest struct {
+	// Message The encrypted message content
+	Message string `json:"message"`
+}
+
+// SendChatMessageResponse Response after sending a chat message
+type SendChatMessageResponse struct {
+	// Success Whether the message was sent successfully
+	Success bool `json:"success"`
+
+	// Timestamp Server timestamp when the message was received
+	Timestamp time.Time `json:"timestamp"`
+}
+
 // SolveFirstChallengeRequest Request to solve the first challenge
 type SolveFirstChallengeRequest struct {
 	// Challenge The challenge string that was received
@@ -122,6 +137,9 @@ type WaitForChatResponseStatus string
 
 // SolveFirstChallengeJSONRequestBody defines body for SolveFirstChallenge for application/json ContentType.
 type SolveFirstChallengeJSONRequestBody = SolveFirstChallengeRequest
+
+// SendChatMessageJSONRequestBody defines body for SendChatMessage for application/json ContentType.
+type SendChatMessageJSONRequestBody = SendChatMessageRequest
 
 // RegisterUserJSONRequestBody defines body for RegisterUser for application/json ContentType.
 type RegisterUserJSONRequestBody = RegisterUserRequest
