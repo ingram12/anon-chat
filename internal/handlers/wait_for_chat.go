@@ -21,9 +21,6 @@ func WaitForChat(
 	if !exist {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 	}
-	if user.ChatID != 0 {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User already in chat"})
-	}
 
 	waitingQueue.AddUser(user.ID)
 	defer waitingQueue.RemoveUser(user.ID)
