@@ -23,7 +23,7 @@ type ServerInterface interface {
 	// (POST /chat/message/send/{userId})
 	SendChatMessage(ctx echo.Context, userId string) error
 	// Quit Chat
-	// (POST /chat/quit/{userId})
+	// (GET /chat/quit/{userId})
 	QuitChat(ctx echo.Context, userId string) error
 	// Update Chat
 	// (GET /chat/update/{userId})
@@ -163,7 +163,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/challenge/first", wrapper.GetFirstChallenge)
 	router.POST(baseURL+"/challenge/solve", wrapper.SolveFirstChallenge)
 	router.POST(baseURL+"/chat/message/send/:userId", wrapper.SendChatMessage)
-	router.POST(baseURL+"/chat/quit/:userId", wrapper.QuitChat)
+	router.GET(baseURL+"/chat/quit/:userId", wrapper.QuitChat)
 	router.GET(baseURL+"/chat/update/:userId", wrapper.UpdateChat)
 	router.POST(baseURL+"/users/register", wrapper.RegisterUser)
 	router.GET(baseURL+"/users/waitChat/:userId", wrapper.WaitForChat)
