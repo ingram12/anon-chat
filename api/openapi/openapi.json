@@ -146,6 +146,48 @@
             }
           }
         }
+      },
+      "/chat/message/send/{userId}": {
+        "post": {
+          "summary": "Send Chat Message",
+          "description": "Send a new message in the active chat.",
+          "operationId": "SendChatMessage",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "path",
+              "required": true,
+              "description": "The ID of the user sending the message",
+              "schema": {
+                "type": "string",
+                "minLength": 36,
+                "maxLength": 36
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendChatMessageRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Message sent successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SendChatMessageResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "components": {
@@ -406,8 +448,41 @@
             "senderId",
             "message"
           ]
+        },
+        "SendChatMessageRequest": {
+          "type": "object",
+          "description": "Request to send a new chat message",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "The encrypted message content",
+              "minLength": 1,
+              "maxLength": 4096
+            }
+          },
+          "required": [
+            "message"
+          ]
+        },
+        "SendChatMessageResponse": {
+          "type": "object",
+          "description": "Response after sending a chat message",
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "description": "Whether the message was sent successfully"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Server timestamp when the message was received"
+            }
+          },
+          "required": [
+            "success",
+            "timestamp"
+          ]
         }
       }
     }
   }
-  
