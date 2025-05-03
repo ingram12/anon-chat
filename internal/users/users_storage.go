@@ -33,19 +33,12 @@ func (s *UserStorage) GetUser(userID string) (User, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	idBytes := StringToBytes(userID)
-
-	user, exists := s.users[idBytes]
+	user, exists := s.users[StringToBytes(userID)]
 	return user, exists
 }
 
 func (s *UserStorage) IsUserExist(userID string) bool {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	idBytes := StringToBytes(userID)
-
-	_, exists := s.users[idBytes]
+	_, exists := s.GetUser(userID)
 	return exists
 }
 
