@@ -24,11 +24,6 @@ func SendChatMessage(ctx echo.Context, userID string, storage *users.UserStorage
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not in chat"})
 	}
 
-	_, err := chatStorage.GetChat(user.ChatID)
-	if err != nil {
-		return ctx.JSON(http.StatusNotFound, echo.Map{"error": "Chat not found"})
-	}
-
 	timestamp, err := chatStorage.AddMessage(user.ChatID, user.ID, req.Message)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
