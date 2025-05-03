@@ -7,8 +7,7 @@ import (
 )
 
 var (
-	ErrChatNotFound    = errors.New("chat not found")
-	ErrMessageNotFound = errors.New("message not found")
+	ErrChatNotFound = errors.New("chat not found")
 )
 
 type Storage struct {
