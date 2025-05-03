@@ -1,7 +1,6 @@
 package users
 
 import (
-	"log"
 	"sync"
 	"time"
 )
@@ -58,7 +57,7 @@ func (s *UserStorage) UpdateUser(user User) {
 	s.users[user.ID] = user
 }
 
-func (s *UserStorage) DeleteInactiveUsers() {
+func (s *UserStorage) RemoveInactiveUsers() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -68,15 +67,4 @@ func (s *UserStorage) DeleteInactiveUsers() {
 			delete(s.users, id)
 		}
 	}
-}
-
-func (s *UserStorage) GetUsersWithoutChat() []User {
-	availableUsers := make([]User, 0, 2)
-	for _, user := range s.users {
-		if user.ChatID == 0 && user.IsRegistered {
-			log.Printf("User %s is available, chatId %d\n", user.GetUserID(), user.ChatID)
-			availableUsers = append(availableUsers, user)
-		}
-	}
-	return availableUsers
 }
