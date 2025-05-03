@@ -24,7 +24,7 @@ func NewUserService(cfg *config.Config) *UserService {
 		chatStorage:   chat.NewChatStorage(),
 	}
 
-	go users.MatchUsersIntoChats(userService.storage, userService.chatStorage)
+	go userService.storage.MatchUsersIntoChats(userService.chatStorage)
 
 	return &userService
 }

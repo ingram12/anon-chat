@@ -11,26 +11,8 @@ import (
 )
 
 func WaitForChat(ctx echo.Context, userID string, storage *users.UserStorage, chatStorage *chat.Storage) error {
-	user, exist := storage.GetUser(userID)
-
-	if !exist {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "user not found"})
-	}
-
-	if user.ChatID != 0 {
-		_, err := chatStorage.GetChat(user.ChatID)
-
-		if err == nil {
-			peerPublicKey := "tttt" // TODO: get peer public key from chat
-			resp := api.WaitForChatResponse{
-				Status:        "assigned",
-				PeerPublicKey: &peerPublicKey,
-			}
-			return ctx.JSON(http.StatusOK, resp)
-		}
-
-		user.ChatID = 0
-		storage.UpdateUser(user)
+	if !storage.IsUserExist(userID) {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 	}
 
 	waitChan := make(chan int, 1)
@@ -39,45 +21,46 @@ func WaitForChat(ctx echo.Context, userID string, storage *users.UserStorage, ch
 		ticker := time.NewTicker(100 * time.Millisecond)
 		defer ticker.Stop()
 
-		for range ticker.C {
-			user, _ := storage.GetUser(userID)
-
-			if user.ChatID != 0 {
-				waitChan <- user.ChatID
+		for {
+			select {
+			case <-ctx.Request().Context().Done():
 				return
+			case <-ticker.C:
+				user, _ := storage.GetUser(userID)
+				if user.ChatID != 0 {
+					waitChan <- user.ChatID
+					return
+				}
 			}
 		}
 	}()
 
 	select {
 	case chatID := <-waitChan:
-		_, err := chatStorage.GetChat(chatID)
+		user, exist := storage.GetUser(userID)
+		if !exist {
+			return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
+		}
 
-		if err == nil {
-			peerPublicKey := "tttt" // TODO: get peer public key from chat
-			resp := api.WaitForChatResponse{
-				Status:        "assigned",
-				PeerPublicKey: &peerPublicKey,
+		chat, err := chatStorage.GetChat(chatID)
+		if err == nil && chat.IsUserInChat(user.ID) {
+			peerID := chat.GetPeerID(user.ID)
+			peerUser, exist := storage.GetUser(users.BytesToString(peerID))
+			if exist {
+				resp := api.WaitForChatResponse{
+					Status:        "assigned",
+					PeerPublicKey: &peerUser.PublicKey,
+				}
+				return ctx.JSON(http.StatusOK, resp)
 			}
-			return ctx.JSON(http.StatusOK, resp)
 		}
-
-		resp := api.WaitForChatResponse{
-			Status:        "waiting",
-			PeerPublicKey: nil,
-		}
-		return ctx.JSON(http.StatusOK, resp)
-	case <-time.After(4 * time.Second):
-		resp := api.WaitForChatResponse{
-			Status:        "waiting",
-			PeerPublicKey: nil,
-		}
-		return ctx.JSON(http.StatusOK, resp)
+	case <-time.After(10 * time.Second): // TODO: make it configurable
 	case <-ctx.Request().Context().Done():
-		resp := api.WaitForChatResponse{
-			Status:        "waiting",
-			PeerPublicKey: nil,
-		}
-		return ctx.JSON(http.StatusOK, resp)
 	}
+
+	resp := api.WaitForChatResponse{
+		Status:        "waiting",
+		PeerPublicKey: nil,
+	}
+	return ctx.JSON(http.StatusOK, resp)
 }
