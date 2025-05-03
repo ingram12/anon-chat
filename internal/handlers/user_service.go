@@ -17,12 +17,16 @@ type UserService struct {
 }
 
 func NewUserService(cfg *config.Config) *UserService {
-	return &UserService{
+	userService := UserService{
 		cfg:           cfg,
 		storage:       users.NewUserStorage(cfg.UserInactivityTimeout),
 		rotatingToken: token.NewRotatingToken(cfg.RotatingTokenLifeTime),
 		chatStorage:   chat.NewChatStorage(),
 	}
+
+	go users.MatchUsersIntoChats(userService.storage, userService.chatStorage)
+
+	return &userService
 }
 
 func (s *UserService) GetFirstChallenge(ctx echo.Context) error {

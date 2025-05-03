@@ -18,10 +18,10 @@ func WaitForChat(ctx echo.Context, userID string, storage *users.UserStorage, ch
 	}
 
 	if user.ChatID != 0 {
-		chat, err := chatStorage.GetChat(user.ChatID)
+		_, err := chatStorage.GetChat(user.ChatID)
 
-		peerPublicKey := string(chat.UserID1[:])
-		if err != nil {
+		if err == nil {
+			peerPublicKey := "tttt" // TODO: get peer public key from chat
 			resp := api.WaitForChatResponse{
 				Status:        "assigned",
 				PeerPublicKey: &peerPublicKey,
@@ -51,19 +51,16 @@ func WaitForChat(ctx echo.Context, userID string, storage *users.UserStorage, ch
 
 	select {
 	case chatID := <-waitChan:
-		chat, err := chatStorage.GetChat(chatID)
+		_, err := chatStorage.GetChat(chatID)
 
-		peerPublicKey := string(chat.UserID1[:])
-		if err != nil {
+		if err == nil {
+			peerPublicKey := "tttt" // TODO: get peer public key from chat
 			resp := api.WaitForChatResponse{
 				Status:        "assigned",
 				PeerPublicKey: &peerPublicKey,
 			}
 			return ctx.JSON(http.StatusOK, resp)
 		}
-
-		user.ChatID = 0
-		storage.UpdateUser(user)
 
 		resp := api.WaitForChatResponse{
 			Status:        "waiting",

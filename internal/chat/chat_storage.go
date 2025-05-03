@@ -104,25 +104,6 @@ func (s *Storage) GetMessages(chatID int, limit int) ([]Message, error) {
 	return messages, nil
 }
 
-func (s *Storage) MarkMessageDelivered(chatID, messageID int) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	chat, exists := s.chats[chatID]
-	if !exists {
-		return ErrChatNotFound
-	}
-
-	msg, exists := chat.Messages[int(messageID)]
-	if !exists {
-		return ErrMessageNotFound
-	}
-
-	msg.IsDelivered = true
-	chat.Messages[int(messageID)] = msg
-	return nil
-}
-
 func (s *Storage) GetUserChats(userID [36]byte) ([]*Chat, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()

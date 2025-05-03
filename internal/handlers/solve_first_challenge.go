@@ -7,6 +7,7 @@ import (
 	"anon-chat/internal/token"
 	"anon-chat/internal/users"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -42,16 +43,21 @@ func SolveFirstChallenge(
 	}
 
 	newChallenge := pow.GenerateChallenge()
+	timeNow := time.Now()
 
-	user := storage.CreateUser(userToken)
-	user.CurrentChallenge = newChallenge
-	user.Difficulty = int(user.CalcDifficalty())
-	user.IsRegistered = false
-
-	storage.UpdateUser(user)
+	user := storage.CreateUser(
+		users.User{
+			ID:               users.StringToBytes(userToken),
+			CreatedAt:        timeNow,
+			LastActivity:     timeNow,
+			CurrentChallenge: newChallenge,
+			IsRegistered:     false,
+			Difficulty:       100,
+		},
+	)
 
 	resp := api.SolveFirstChallengeResponse{
-		UserId:     string(user.ID[:]),
+		UserId:     user.GetUserID(),
 		Challenge:  newChallenge,
 		Difficulty: int32(user.Difficulty),
 	}
