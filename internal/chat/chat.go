@@ -9,7 +9,7 @@ type Chat struct {
 	CreatedAt time.Time
 	UserID1   [36]byte
 	UserID2   [36]byte
-	Messages  map[int]Message
+	Messages  []Message
 }
 
 func (c *Chat) IsUserInChat(userID [36]byte) bool {

@@ -2,7 +2,6 @@ package chat
 
 import (
 	"errors"
-	"sort"
 	"sync"
 	"time"
 )
@@ -35,7 +34,7 @@ func (s *Storage) CreateChat(userID1, userID2 [36]byte) (*Chat, error) {
 		CreatedAt: time.Now(),
 		UserID1:   userID1,
 		UserID2:   userID2,
-		Messages:  make(map[int]Message),
+		Messages:  make([]Message, 0, 10),
 	}
 	s.chats[chat.ID] = chat
 	return chat, nil
@@ -77,43 +76,4 @@ func (s *Storage) AddMessage(chatID int, userID [36]byte, message string) (*Mess
 
 	chat.Messages[int(s.lastMsgID)] = msg
 	return &msg, nil
-}
-
-func (s *Storage) GetMessages(chatID int, limit int) ([]Message, error) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	chat, exists := s.chats[chatID]
-	if !exists {
-		return nil, ErrChatNotFound
-	}
-
-	messages := make([]Message, 0, len(chat.Messages))
-	for _, msg := range chat.Messages {
-		messages = append(messages, msg)
-	}
-
-	// Sort messages by ID (chronological order)
-	sort.Slice(messages, func(i, j int) bool {
-		return messages[i].ID < messages[j].ID
-	})
-
-	if limit > 0 && len(messages) > limit {
-		return messages[len(messages)-limit:], nil
-	}
-	return messages, nil
-}
-
-func (s *Storage) GetUserChats(userID [36]byte) ([]*Chat, error) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	var userChats []*Chat
-	for _, chat := range s.chats {
-		if chat.UserID1 == userID || chat.UserID2 == userID {
-			userChats = append(userChats, chat)
-		}
-	}
-
-	return userChats, nil
 }
