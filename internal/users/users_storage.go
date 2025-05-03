@@ -85,7 +85,7 @@ func (s *UserStorage) GetUsersWithoutChat() []User {
 }
 
 func (s *UserStorage) MatchUsersIntoChats(chatStorage *chat.Storage) {
-	ticker := time.NewTicker(2 * time.Second)
+	ticker := time.NewTicker(300 * time.Millisecond)
 	defer ticker.Stop()
 
 	for range ticker.C {
