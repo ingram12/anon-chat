@@ -49,8 +49,8 @@ func main() {
 	}))
 
 	configuration := config.NewConfig()
-	userService := handlers.NewUserService(configuration)
-	api.RegisterHandlers(e, userService)
+	server := handlers.NewServer(configuration)
+	api.RegisterHandlers(e, server)
 
 	if *dev {
 		// Прокси dev-сервера Vite через Go

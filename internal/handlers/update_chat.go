@@ -9,8 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func UpdateChat(ctx echo.Context, userID string, storage *users.UserStorage, chatStorage *chat.Storage) error {
-	user, exist := storage.GetUser(userID)
+func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage, chatStorage *chat.Storage) error {
+	user, exist := userStorage.GetUser(userID)
 	if !exist {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 	}

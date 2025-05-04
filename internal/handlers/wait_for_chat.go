@@ -13,11 +13,11 @@ import (
 func WaitForChat(
 	ctx echo.Context,
 	userID string,
-	storage *users.UserStorage,
+	userStorage *users.UserStorage,
 	chatStorage *chat.Storage,
 	waitingQueue *users.WaitingQueue,
 ) error {
-	user, exist := storage.GetUser(userID)
+	user, exist := userStorage.GetUser(userID)
 	if !exist {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 	}
@@ -36,8 +36,8 @@ func WaitForChat(
 			case <-ctx.Request().Context().Done():
 				return
 			case <-ticker.C:
-				waitingQueue.TryMatch(chatStorage, storage)
-				user, _ := storage.GetUser(userID)
+				waitingQueue.TryMatch(chatStorage, userStorage)
+				user, _ := userStorage.GetUser(userID)
 				if user.ChatID != 0 {
 					waitChan <- user.ChatID
 					return
@@ -48,7 +48,7 @@ func WaitForChat(
 
 	select {
 	case chatID := <-waitChan:
-		user, exist := storage.GetUser(userID)
+		user, exist := userStorage.GetUser(userID)
 		if !exist {
 			return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 		}
@@ -56,7 +56,7 @@ func WaitForChat(
 		chat, err := chatStorage.GetChat(chatID)
 		if err == nil && chat.IsUserInChat(user.ID) {
 			peerID := chat.GetPeerID(user.ID)
-			peerUser, exist := storage.GetUser(users.BytesToString(peerID))
+			peerUser, exist := userStorage.GetUser(users.BytesToString(peerID))
 			if exist && chat.IsUserInChat(peerUser.ID) {
 				resp := api.WaitForChatResponse{
 					Status:        "assigned",

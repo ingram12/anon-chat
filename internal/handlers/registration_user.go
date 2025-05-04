@@ -18,13 +18,13 @@ var (
 	ErrUserAlreadyRegistered = errors.New("user already registered")
 )
 
-func RegisterUser(ctx echo.Context, storage *users.UserStorage) error {
+func RegisterUser(ctx echo.Context, userStorage *users.UserStorage) error {
 	var req api.RegisterUserRequest
 	if err := ctx.Bind(&req); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
-	user, exists := storage.GetUser(req.UserId)
+	user, exists := userStorage.GetUser(req.UserId)
 	if !exists {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": ErrUserNotFound.Error()})
 	}
@@ -46,7 +46,7 @@ func RegisterUser(ctx echo.Context, storage *users.UserStorage) error {
 	user.PublicKey = req.PublicKey
 	user.IsRegistered = true
 	user.LastActivity = time.Now()
-	storage.UpdateUser(user)
+	userStorage.UpdateUser(user)
 
 	resp := api.RegisterUserResponse{
 		UserId:  string(user.ID[:]),

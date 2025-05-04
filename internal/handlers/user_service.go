@@ -9,50 +9,50 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type UserService struct {
+type Server struct {
 	cfg           *config.Config
-	storage       *users.UserStorage
+	userStorage   *users.UserStorage
 	rotatingToken *token.RotatingToken
 	chatStorage   *chat.Storage
 	waitingQueue  *users.WaitingQueue
 }
 
-func NewUserService(cfg *config.Config) *UserService {
-	userService := UserService{
+func NewServer(cfg *config.Config) *Server {
+	server := Server{
 		cfg:           cfg,
-		storage:       users.NewUserStorage(cfg.UserInactivityTimeout),
+		userStorage:   users.NewUserStorage(cfg.UserInactivityTimeout),
 		rotatingToken: token.NewRotatingToken(cfg.RotatingTokenLifeTime),
 		waitingQueue:  users.NewWaitingQueue(),
 		chatStorage:   chat.NewChatStorage(),
 	}
 
-	return &userService
+	return &server
 }
 
-func (s *UserService) GetFirstChallenge(ctx echo.Context) error {
+func (s *Server) GetFirstChallenge(ctx echo.Context) error {
 	return GetFirstChallenge(ctx, s.cfg, s.rotatingToken)
 }
 
-func (s *UserService) SolveFirstChallenge(ctx echo.Context) error {
-	return SolveFirstChallenge(ctx, s.cfg, s.storage, s.rotatingToken)
+func (s *Server) SolveFirstChallenge(ctx echo.Context) error {
+	return SolveFirstChallenge(ctx, s.cfg, s.userStorage, s.rotatingToken)
 }
 
-func (s *UserService) RegisterUser(ctx echo.Context) error {
-	return RegisterUser(ctx, s.storage)
+func (s *Server) RegisterUser(ctx echo.Context) error {
+	return RegisterUser(ctx, s.userStorage)
 }
 
-func (s *UserService) WaitForChat(ctx echo.Context, userID string) error {
-	return WaitForChat(ctx, userID, s.storage, s.chatStorage, s.waitingQueue)
+func (s *Server) WaitForChat(ctx echo.Context, userID string) error {
+	return WaitForChat(ctx, userID, s.userStorage, s.chatStorage, s.waitingQueue)
 }
 
-func (s *UserService) UpdateChat(ctx echo.Context, userID string) error {
-	return UpdateChat(ctx, userID, s.storage, s.chatStorage)
+func (s *Server) UpdateChat(ctx echo.Context, userID string) error {
+	return UpdateChat(ctx, userID, s.userStorage, s.chatStorage)
 }
 
-func (s *UserService) SendChatMessage(ctx echo.Context, userID string) error {
-	return SendChatMessage(ctx, userID, s.storage, s.chatStorage)
+func (s *Server) SendChatMessage(ctx echo.Context, userID string) error {
+	return SendChatMessage(ctx, userID, s.userStorage, s.chatStorage)
 }
 
-func (s *UserService) QuitChat(ctx echo.Context, userID string) error {
-	return QuitChat(ctx, userID, s.storage, s.chatStorage)
+func (s *Server) QuitChat(ctx echo.Context, userID string) error {
+	return QuitChat(ctx, userID, s.userStorage, s.chatStorage)
 }

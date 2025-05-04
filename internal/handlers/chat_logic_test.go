@@ -19,14 +19,14 @@ import (
 type testContext struct {
 	t           *testing.T
 	e           *echo.Echo
-	userService *UserService
+	userService *Server
 }
 
 func setupTest(t *testing.T) *testContext {
 	configuration := config.NewConfig()
 	configuration.FirstChallengeDifficulty = 1
 
-	userService := NewUserService(configuration)
+	userService := NewServer(configuration)
 	e := echo.New()
 	return &testContext{
 		t:           t,
@@ -75,7 +75,7 @@ func (tc *testContext) solveFirstChallenge(response api.GetFirstChallengeRespons
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	ctx := tc.e.NewContext(req, rec)
 
-	err = SolveFirstChallenge(ctx, tc.userService.cfg, tc.userService.storage, tc.userService.rotatingToken)
+	err = SolveFirstChallenge(ctx, tc.userService.cfg, tc.userService.userStorage, tc.userService.rotatingToken)
 	if err != nil {
 		tc.t.Fatalf("Failed to solve first challenge: %v", err)
 	}
@@ -114,7 +114,7 @@ func (tc *testContext) registerUser(solveResp api.SolveFirstChallengeResponse) a
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	ctx := tc.e.NewContext(req, rec)
 
-	err = RegisterUser(ctx, tc.userService.storage)
+	err = RegisterUser(ctx, tc.userService.userStorage)
 	if err != nil {
 		tc.t.Fatalf("Failed to register user: %v", err)
 	}
@@ -134,7 +134,7 @@ func (tc *testContext) waitForChat(userID string) api.WaitForChatResponse {
 	ctx.SetParamNames("userId")
 	ctx.SetParamValues(userID)
 
-	err := WaitForChat(ctx, userID, tc.userService.storage, tc.userService.chatStorage, tc.userService.waitingQueue)
+	err := WaitForChat(ctx, userID, tc.userService.userStorage, tc.userService.chatStorage, tc.userService.waitingQueue)
 	if err != nil {
 		tc.t.Fatalf("Failed to wait for chat: %v", err)
 	}
@@ -154,7 +154,7 @@ func (tc *testContext) updateChat(userID string) api.UpdateChatResponse {
 	ctx.SetParamNames("userId")
 	ctx.SetParamValues(userID)
 
-	err := UpdateChat(ctx, userID, tc.userService.storage, tc.userService.chatStorage)
+	err := UpdateChat(ctx, userID, tc.userService.userStorage, tc.userService.chatStorage)
 	if err != nil {
 		tc.t.Fatalf("Failed to update chat: %v", err)
 	}
@@ -188,7 +188,7 @@ func (tc *testContext) sendChatMessage(userID string, message string) api.SendCh
 	ctx.SetParamNames("userId")
 	ctx.SetParamValues(userID)
 
-	err = SendChatMessage(ctx, userID, tc.userService.storage, tc.userService.chatStorage)
+	err = SendChatMessage(ctx, userID, tc.userService.userStorage, tc.userService.chatStorage)
 	if err != nil {
 		tc.t.Fatalf("Failed to send chat message: %v", err)
 	}
@@ -208,7 +208,7 @@ func (tc *testContext) quitChat(userID string) api.QuitChatResponse {
 	ctx.SetParamNames("userId")
 	ctx.SetParamValues(userID)
 
-	err := QuitChat(ctx, userID, tc.userService.storage, tc.userService.chatStorage)
+	err := QuitChat(ctx, userID, tc.userService.userStorage, tc.userService.chatStorage)
 	if err != nil {
 		tc.t.Fatalf("Failed to quit chat: %v", err)
 	}

@@ -9,13 +9,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func SendChatMessage(ctx echo.Context, userID string, storage *users.UserStorage, chatStorage *chat.Storage) error {
+func SendChatMessage(ctx echo.Context, userID string, userStorage *users.UserStorage, chatStorage *chat.Storage) error {
 	var req api.SendChatMessageRequest
 	if err := ctx.Bind(&req); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
-	user, exists := storage.GetUser(userID)
+	user, exists := userStorage.GetUser(userID)
 	if !exists {
 		return ctx.JSON(http.StatusNotFound, echo.Map{"error": "User not found"})
 	}

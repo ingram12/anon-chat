@@ -15,7 +15,7 @@ import (
 func SolveFirstChallenge(
 	ctx echo.Context,
 	cfg *config.Config,
-	storage *users.UserStorage,
+	userStorage *users.UserStorage,
 	rotatingToken *token.RotatingToken,
 ) error {
 	var req api.SolveFirstChallengeRequest
@@ -23,7 +23,7 @@ func SolveFirstChallenge(
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
-	if storage.IsUserExist(req.Token) {
+	if userStorage.IsUserExist(req.Token) {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "challenge already solved"})
 	}
 
@@ -45,7 +45,7 @@ func SolveFirstChallenge(
 	newChallenge := pow.GenerateChallenge()
 	timeNow := time.Now()
 
-	user := storage.CreateUser(
+	user := userStorage.CreateUser(
 		users.User{
 			ID:               users.StringToBytes(userToken),
 			CreatedAt:        timeNow,
