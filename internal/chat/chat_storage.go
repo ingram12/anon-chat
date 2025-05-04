@@ -59,9 +59,7 @@ func (s *Storage) GetPeerMessages(chatID int, userID [36]byte) ([]Message, error
 		return []Message{}, ErrChatNotFound
 	}
 
-	messages := chat.GetPeerMessages(userID)
-
-	return messages, nil
+	return chat.GetPeerMessages(userID), nil
 }
 
 func (s *Storage) RemovePeerMessages(chatID int, userID [36]byte) error {
