@@ -46,7 +46,7 @@ func (wq *WaitingQueue) GetTwoRandomUsers() ([36]byte, [36]byte, error) {
 		return [36]byte{}, [36]byte{}, errors.New("not enough users")
 	}
 
-	var userIDs [][36]byte
+	userIDs := make([][36]byte, 0, 2)
 	count := 0
 	for id := range wq.users {
 		userIDs = append(userIDs, id)

@@ -24,7 +24,7 @@ func UpdateChat(ctx echo.Context, userID string, storage *users.UserStorage, cha
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not in chat 3"})
 	}
-	chatStorage.RemovePeerMessages(chatID, user.ID) // TODO: check if this is correct
+	_ = chatStorage.RemovePeerMessages(chatID, user.ID) // TODO: check if this is correct
 
 	respMessages := make([]api.ChatMessage, len(messages))
 	for i, msg := range messages {
