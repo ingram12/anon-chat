@@ -21,13 +21,6 @@ func main() {
 	// Add limit of 128K to the request body
 	e.Use(middleware.BodyLimit("128K"))
 
-	// Add CORS middleware
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
-	}))
-
 	// Add route to serve swagger.json
 	e.GET("/swagger.json", func(c echo.Context) error {
 		swagger, err := api.GetSwagger()
