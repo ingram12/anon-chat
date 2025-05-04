@@ -9,24 +9,24 @@ import (
 
 type WaitingQueue struct {
 	mu         sync.RWMutex
-	users      map[[36]byte]time.Time
+	users      map[string]time.Time
 	isMatching bool
 }
 
 func NewWaitingQueue() *WaitingQueue {
 	return &WaitingQueue{
-		users:      make(map[[36]byte]time.Time),
+		users:      make(map[string]time.Time),
 		isMatching: false,
 	}
 }
 
-func (wq *WaitingQueue) AddUser(userID [36]byte) {
+func (wq *WaitingQueue) AddUser(userID string) {
 	wq.mu.Lock()
 	defer wq.mu.Unlock()
 	wq.users[userID] = time.Now()
 }
 
-func (wq *WaitingQueue) RemoveUser(userID [36]byte) {
+func (wq *WaitingQueue) RemoveUser(userID string) {
 	wq.mu.Lock()
 	defer wq.mu.Unlock()
 	delete(wq.users, userID)
@@ -38,15 +38,15 @@ func (wq *WaitingQueue) GetLen() int {
 	return len(wq.users)
 }
 
-func (wq *WaitingQueue) GetTwoRandomUsers() ([36]byte, [36]byte, error) {
+func (wq *WaitingQueue) GetTwoRandomUsers() (string, string, error) {
 	wq.mu.RLock()
 	defer wq.mu.RUnlock()
 
 	if len(wq.users) < 2 {
-		return [36]byte{}, [36]byte{}, errors.New("not enough users")
+		return "", "", errors.New("not enough users")
 	}
 
-	userIDs := make([][36]byte, 0, 2)
+	userIDs := make([]string, 0, 2)
 	count := 0
 	for id := range wq.users {
 		userIDs = append(userIDs, id)

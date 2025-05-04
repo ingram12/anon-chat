@@ -5,7 +5,7 @@ import (
 )
 
 type User struct {
-	ID               [36]byte
+	ID               string
 	Nickname         string
 	Tags             []string
 	PublicKey        string
@@ -23,14 +23,4 @@ func (u *User) CalcDifficalty() int {
 	}
 
 	return 100
-}
-
-func (u *User) GetUserID() string {
-	return string(u.ID[:])
-}
-
-func (u *User) SetUserID(userID string) {
-	var idBytes [36]byte
-	copy(idBytes[:], userID)
-	u.ID = idBytes
 }

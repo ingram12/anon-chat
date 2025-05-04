@@ -56,7 +56,7 @@ func WaitForChat(
 		chat, err := chatStorage.GetChat(chatID)
 		if err == nil && chat.IsUserInChat(user.ID) {
 			peerID := chat.GetPeerID(user.ID)
-			peerUser, exist := userStorage.GetUser(users.BytesToString(peerID))
+			peerUser, exist := userStorage.GetUser(peerID)
 			if exist && chat.IsUserInChat(peerUser.ID) {
 				resp := api.WaitForChatResponse{
 					Status:        "assigned",

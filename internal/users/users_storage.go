@@ -7,13 +7,13 @@ import (
 
 type UserStorage struct {
 	mu                    sync.RWMutex
-	users                 map[[36]byte]User
+	users                 map[string]User
 	userInactivityTimeout time.Duration
 }
 
 func NewUserStorage(userInactivityTimeout time.Duration) *UserStorage {
 	return &UserStorage{
-		users:                 make(map[[36]byte]User),
+		users:                 make(map[string]User),
 		userInactivityTimeout: userInactivityTimeout,
 	}
 }
@@ -29,11 +29,11 @@ func (s *UserStorage) CreateUser(user User) User {
 func (s *UserStorage) GetUser(userID string) (User, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	user, exists := s.users[StringToBytes(userID)]
+	user, exists := s.users[userID]
 	return user, exists
 }
 
-func (s *UserStorage) GetUserBytes(userID [36]byte) (User, bool) {
+func (s *UserStorage) GetUserBytes(userID string) (User, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	user, exists := s.users[userID]

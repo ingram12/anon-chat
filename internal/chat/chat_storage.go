@@ -22,7 +22,7 @@ func NewChatStorage() *Storage {
 	}
 }
 
-func (s *Storage) CreateChat(userID1, userID2 [36]byte) (*Chat, error) {
+func (s *Storage) CreateChat(userID1, userID2 string) (*Chat, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -50,7 +50,7 @@ func (s *Storage) GetChat(chatID int) (*Chat, error) {
 	return chat, nil
 }
 
-func (s *Storage) GetPeerMessages(chatID int, userID [36]byte) ([]Message, error) {
+func (s *Storage) GetPeerMessages(chatID int, userID string) ([]Message, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -62,7 +62,7 @@ func (s *Storage) GetPeerMessages(chatID int, userID [36]byte) ([]Message, error
 	return chat.GetPeerMessages(userID), nil
 }
 
-func (s *Storage) RemovePeerMessages(chatID int, userID [36]byte) error {
+func (s *Storage) RemovePeerMessages(chatID int, userID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -82,7 +82,7 @@ func (s *Storage) RemovePeerMessages(chatID int, userID [36]byte) error {
 	return nil
 }
 
-func (s *Storage) AddMessage(chatID int, userID [36]byte, message string) (time.Time, error) {
+func (s *Storage) AddMessage(chatID int, userID string, message string) (time.Time, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -109,7 +109,7 @@ func (s *Storage) AddMessage(chatID int, userID [36]byte, message string) (time.
 	return timeNow, nil
 }
 
-func (s *Storage) QuitChat(chatID int, userID [36]byte) error {
+func (s *Storage) QuitChat(chatID int, userID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -119,9 +119,9 @@ func (s *Storage) QuitChat(chatID int, userID [36]byte) error {
 	}
 
 	if chat.UserID1 == userID {
-		chat.UserID1 = [36]byte{}
+		chat.UserID1 = ""
 	} else if chat.UserID2 == userID {
-		chat.UserID2 = [36]byte{}
+		chat.UserID2 = ""
 	} else {
 		return errors.New("user not in chat")
 	}
@@ -129,7 +129,7 @@ func (s *Storage) QuitChat(chatID int, userID [36]byte) error {
 	return nil
 }
 
-func (s *Storage) IsUserInChat(chatID int, userID [36]byte) bool {
+func (s *Storage) IsUserInChat(chatID int, userID string) bool {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
