@@ -15,7 +15,6 @@ export interface SolveFirstChallengeResponse {
 
 export interface RegisterUserRequest {
     challenge: string;
-    token: string;
     difficulty: number;
     userId: string;
     nonce: string;
