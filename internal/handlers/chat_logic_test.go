@@ -247,19 +247,19 @@ func TestChatFlow(t *testing.T) {
 	wg.Wait()
 
 	// Update chat
-	updateResp1 := tc.updateChat(regResp1.UserId)
-	updateResp2 := tc.updateChat(regResp2.UserId)
+	tc.updateChat(regResp1.UserId)
+	tc.updateChat(regResp2.UserId)
 
 	// Send messages
 	tc.sendChatMessage(regResp1.UserId, "Hello from user 1")
 	tc.sendChatMessage(regResp2.UserId, "Hello from user 2")
 
 	// Check for new messages
-	updateResp1 = tc.updateChat(regResp1.UserId)
+	updateResp1 := tc.updateChat(regResp1.UserId)
 	if len(updateResp1.Messages) == 0 {
 		t.Error("Expected messages in update response for user 1")
 	}
-	updateResp2 = tc.updateChat(regResp2.UserId)
+	updateResp2 := tc.updateChat(regResp2.UserId)
 	if len(updateResp2.Messages) == 0 {
 		t.Error("Expected messages in update response for user 2")
 	}
