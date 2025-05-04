@@ -13,9 +13,13 @@ test:
 	go test -v ./...
 
 build-frontend:
-	cd frontend && npm install && npm run build
+	npm install --prefix frontend
+	npm run build --prefix frontend
+	rm -rf ./build/frontend
+	mkdir -p ./build/frontend
+	cp -r frontend/dist/. ./build/frontend
 
 build-backend:
-	go build -o bin/server ./cmd/server
+	go build -o build/server ./cmd/server
 
 build: build-frontend build-backend
