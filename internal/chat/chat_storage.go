@@ -96,12 +96,12 @@ func (s *Storage) AddMessage(chatID int, userID [36]byte, message string) (time.
 	timeNow := time.Now()
 	if chat.UserID1 == userID {
 		chat.User1Messages = append(chat.User1Messages, Message{
-			CreatedAt: timeNow,
+			Timestamp: timeNow,
 			Message:   message,
 		})
 	} else if chat.UserID2 == userID {
 		chat.User2Messages = append(chat.User2Messages, Message{
-			CreatedAt: timeNow,
+			Timestamp: timeNow,
 			Message:   message,
 		})
 	} else {
@@ -129,4 +129,16 @@ func (s *Storage) QuitChat(chatID int, userID [36]byte) error {
 	}
 
 	return nil
+}
+
+func (s *Storage) IsUserInChat(chatID int, userID [36]byte) bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	chat, exists := s.chats[chatID]
+	if !exists {
+		return false
+	}
+
+	return chat.IsUserInChat(userID)
 }

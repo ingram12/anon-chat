@@ -5,7 +5,7 @@ import (
 )
 
 type Message struct {
-	CreatedAt   time.Time
+	Timestamp   time.Time
 	Message     string
 	IsDelivered bool
 }
