@@ -4,10 +4,10 @@ import (
 	"anon-chat/internal/api"
 	"anon-chat/internal/config"
 	"anon-chat/internal/handlers"
+	"flag"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -16,10 +16,17 @@ import (
 )
 
 func main() {
+	dev := flag.Bool("dev", false, "Run in development mode (with frontend proxy)")
+	flag.Parse()
+
 	e := echo.New()
 
 	// Add limit of 128K to the request body
 	e.Use(middleware.BodyLimit("128K"))
+
+	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+		Level: 5,
+	}))
 
 	// Add route to serve swagger.json
 	e.GET("/swagger.json", func(c echo.Context) error {
@@ -45,7 +52,7 @@ func main() {
 	userService := handlers.NewUserService(configuration)
 	api.RegisterHandlers(e, userService)
 
-	if os.Getenv("APP_ENV") == "dev" {
+	if *dev {
 		// Прокси dev-сервера Vite через Go
 		target, _ := url.Parse("http://localhost:5173")
 		proxy := httputil.NewSingleHostReverseProxy(target)
