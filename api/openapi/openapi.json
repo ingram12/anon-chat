@@ -6,7 +6,7 @@
       "description": "API for anonymous chat application with challenge-based authentication"
     },
     "paths": {
-      "/challenge/first": {
+      "/api/challenge/first": {
         "get": {
           "summary": "Get First Challenge",
           "description": "Retrieves the initial challenge for user authentication. This challenge must be solved before registration.",
@@ -25,7 +25,7 @@
           }
         }
       },
-      "/challenge/solve": {
+      "/api/challenge/solve": {
         "post": {
           "summary": "Solve First Challenge",
           "description": "Submit solution for the first challenge. This step is required before user registration.",
@@ -54,7 +54,7 @@
           }
         }
       },
-      "/users/register": {
+      "/api/users/register": {
         "post": {
           "summary": "Register New User",
           "description": "Register a new user in the system. Requires successful completion of the first challenge.",
@@ -83,7 +83,7 @@
           }
         }
       },
-      "/users/waitChat/{userId}": {
+      "/api/users/waitChat/{userId}": {
         "get": {
           "summary": "Wait for Chat",
           "description": "Wait for a chat to be assigned to the user. This endpoint is used to check if a chat is available.",
@@ -115,7 +115,7 @@
           }
         }
       },
-      "/chat/update/{userId}": {
+      "/api/chat/update/{userId}": {
         "get": {
           "summary": "Update Chat",
           "description": "Check for updates in the chat. This endpoint is used to retrieve new messages or chat status.",
@@ -147,7 +147,7 @@
           }
         }
       },
-      "/chat/message/send/{userId}": {
+      "/api/chat/message/send/{userId}": {
         "post": {
           "summary": "Send Chat Message",
           "description": "Send a new message in the active chat.",
@@ -189,7 +189,7 @@
           }
         }
       },
-      "/chat/quit/{userId}": {
+      "/api/chat/quit/{userId}": {
         "get": {
           "summary": "Quit Chat",
           "description": "Leave the current chat session.",
