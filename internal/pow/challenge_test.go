@@ -54,9 +54,7 @@ func TestSolveChallenge(t *testing.T) {
 		t.Fatalf("SolveChallenge() failed: %v", err)
 	}
 
-	if VerifyChallengeNonce(challenge, solution, 30) {
-		t.Logf("Found solution: %v for challenge: %v", solution, 30)
-	} else {
+	if !VerifyChallengeNonce(challenge, solution, 30) {
 		t.Errorf("VerifyChallengeNonce() failed for found solution: %v", solution)
 	}
 }
