@@ -477,8 +477,8 @@
             }
           },
           "required": [
-            "senderId",
-            "message"
+            "message",
+            "timestamp"
           ]
         },
         "SendChatMessageRequest": {
