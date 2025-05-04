@@ -1,4 +1,4 @@
-.PHONY: generate-api lint test
+.PHONY: generate-api lint test build build-frontend build-backend
 
 generate-api:
 	mkdir -p internal/api
@@ -11,3 +11,11 @@ lint:
 
 test:
 	go test -v ./...
+
+build-frontend:
+	cd frontend && npm install && npm run build
+
+build-backend:
+	go build -o bin/server ./cmd/server
+
+build: build-frontend build-backend
