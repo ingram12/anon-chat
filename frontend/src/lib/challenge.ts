@@ -10,9 +10,6 @@ interface WorkerRequest {
   difficulty: number;
 }
 
-/**
- * Solves a challenge received from the server
- */
 export async function solveChallenge(challenge: string, difficulty: number): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!worker) {
