@@ -14,25 +14,25 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Get First Challenge
-	// (GET /challenge/first)
+	// (GET /api/challenge/first)
 	GetFirstChallenge(ctx echo.Context) error
 	// Solve First Challenge
-	// (POST /challenge/solve)
+	// (POST /api/challenge/solve)
 	SolveFirstChallenge(ctx echo.Context) error
 	// Send Chat Message
-	// (POST /chat/message/send/{userId})
+	// (POST /api/chat/message/send/{userId})
 	SendChatMessage(ctx echo.Context, userId string) error
 	// Quit Chat
-	// (GET /chat/quit/{userId})
+	// (GET /api/chat/quit/{userId})
 	QuitChat(ctx echo.Context, userId string) error
 	// Update Chat
-	// (GET /chat/update/{userId})
+	// (GET /api/chat/update/{userId})
 	UpdateChat(ctx echo.Context, userId string) error
 	// Register New User
-	// (POST /users/register)
+	// (POST /api/users/register)
 	RegisterUser(ctx echo.Context) error
 	// Wait for Chat
-	// (GET /users/waitChat/{userId})
+	// (GET /api/users/waitChat/{userId})
 	WaitForChat(ctx echo.Context, userId string) error
 }
 
@@ -160,12 +160,12 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/challenge/first", wrapper.GetFirstChallenge)
-	router.POST(baseURL+"/challenge/solve", wrapper.SolveFirstChallenge)
-	router.POST(baseURL+"/chat/message/send/:userId", wrapper.SendChatMessage)
-	router.GET(baseURL+"/chat/quit/:userId", wrapper.QuitChat)
-	router.GET(baseURL+"/chat/update/:userId", wrapper.UpdateChat)
-	router.POST(baseURL+"/users/register", wrapper.RegisterUser)
-	router.GET(baseURL+"/users/waitChat/:userId", wrapper.WaitForChat)
+	router.GET(baseURL+"/api/challenge/first", wrapper.GetFirstChallenge)
+	router.POST(baseURL+"/api/challenge/solve", wrapper.SolveFirstChallenge)
+	router.POST(baseURL+"/api/chat/message/send/:userId", wrapper.SendChatMessage)
+	router.GET(baseURL+"/api/chat/quit/:userId", wrapper.QuitChat)
+	router.GET(baseURL+"/api/chat/update/:userId", wrapper.UpdateChat)
+	router.POST(baseURL+"/api/users/register", wrapper.RegisterUser)
+	router.GET(baseURL+"/api/users/waitChat/:userId", wrapper.WaitForChat)
 
 }
