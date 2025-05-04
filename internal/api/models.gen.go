@@ -25,7 +25,7 @@ type ChatMessage struct {
 	Message string `json:"message"`
 
 	// Timestamp Timestamp of when the message was sent
-	Timestamp *time.Time `json:"timestamp,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 // GetFirstChallengeResponse Response containing the first challenge details
