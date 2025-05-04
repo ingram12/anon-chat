@@ -59,22 +59,22 @@ func (wq *WaitingQueue) GetTwoRandomUsers() ([36]byte, [36]byte, error) {
 	return userIDs[0], userIDs[1], nil
 }
 
-func (m *WaitingQueue) TryMatch(chatStorage *chat.Storage, userStorage *UserStorage) {
-	m.mu.Lock()
-	if m.isMatching {
-		m.mu.Unlock()
+func (wq *WaitingQueue) TryMatch(chatStorage *chat.Storage, userStorage *UserStorage) {
+	wq.mu.Lock()
+	if wq.isMatching {
+		wq.mu.Unlock()
 		return // Already matching
 	}
-	m.isMatching = true
-	m.mu.Unlock()
+	wq.isMatching = true
+	wq.mu.Unlock()
 
 	go func() {
 		defer func() {
-			m.mu.Lock()
-			m.isMatching = false
-			m.mu.Unlock()
+			wq.mu.Lock()
+			wq.isMatching = false
+			wq.mu.Unlock()
 		}()
 
-		MatchUsers(userStorage, chatStorage, m)
+		MatchUsers(userStorage, chatStorage, wq)
 	}()
 }
