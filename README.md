@@ -1,3 +1,3 @@
 # Anon Chat
 
-Anonymous chat application backend with Proof-of-Work authentication.
+Anonymous chat without authentication, with encryption and Proof of Work-based protection.
