@@ -5,6 +5,7 @@ import (
 	"anon-chat/internal/config"
 	"anon-chat/internal/handlers"
 	"flag"
+	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -17,6 +18,7 @@ import (
 
 func main() {
 	dev := flag.Bool("dev", false, "Run in development mode (with frontend proxy)")
+	port := flag.Int("port", 8080, "Port")
 	flag.Parse()
 
 	e := echo.New()
@@ -67,5 +69,7 @@ func main() {
 		})
 	}
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(
+		e.Start(fmt.Sprintf(":%d", *port)),
+	)
 }
