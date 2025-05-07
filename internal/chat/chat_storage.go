@@ -140,3 +140,15 @@ func (s *Storage) IsUserInChat(chatID int, userID string) bool {
 
 	return chat.IsUserInChat(userID)
 }
+
+func (s *Storage) IsActiveChat(chatID int) bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	chat, exists := s.chats[chatID]
+	if !exists {
+		return false
+	}
+
+	return chat.IsActive()
+}

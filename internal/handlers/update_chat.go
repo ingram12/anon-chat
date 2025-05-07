@@ -17,12 +17,22 @@ func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage,
 
 	chatID := user.ChatID
 	if chatID == 0 {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not in chat 2"})
+		resp := api.UpdateChatResponse{
+			Status: "closed",
+		}
+		return ctx.JSON(http.StatusOK, resp)
+	}
+
+	if !chatStorage.IsActiveChat(chatID) {
+		resp := api.UpdateChatResponse{
+			Status: "closed",
+		}
+		return ctx.JSON(http.StatusOK, resp)
 	}
 
 	messages, err := chatStorage.GetPeerMessages(chatID, user.ID)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not in chat 3"})
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not in chat 4"})
 	}
 	_ = chatStorage.RemovePeerMessages(chatID, user.ID) // TODO: check if this is correct
 

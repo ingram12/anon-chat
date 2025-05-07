@@ -17,6 +17,10 @@ func (c *Chat) IsUserInChat(userID string) bool {
 	return c.UserID1 == userID || c.UserID2 == userID
 }
 
+func (c *Chat) IsActive() bool {
+	return c.UserID1 != "" && c.UserID2 != ""
+}
+
 func (c *Chat) GetPeerID(userID string) string {
 	if c.UserID1 == userID {
 		return c.UserID2
