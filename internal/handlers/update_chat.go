@@ -16,14 +16,7 @@ func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage,
 	}
 
 	chatID := user.ChatID
-	if chatID == 0 {
-		resp := api.UpdateChatResponse{
-			Status: "closed",
-		}
-		return ctx.JSON(http.StatusOK, resp)
-	}
-
-	if !chatStorage.IsActiveChat(chatID) {
+	if chatID == 0 || !chatStorage.IsActiveChat(chatID) {
 		resp := api.UpdateChatResponse{
 			Status: "closed",
 		}
