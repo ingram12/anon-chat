@@ -6,7 +6,7 @@ import (
 )
 
 type UserStorage struct {
-	mu                    sync.RWMutex
+	Mu                    sync.RWMutex
 	users                 map[string]User
 	userInactivityTimeout time.Duration
 }
@@ -19,23 +19,23 @@ func NewUserStorage(userInactivityTimeout time.Duration) *UserStorage {
 }
 
 func (s *UserStorage) CreateUser(user User) User {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
 	s.users[user.ID] = user
 	return user
 }
 
 func (s *UserStorage) GetUser(userID string) (User, bool) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
+	user, exists := s.users[userID]
+	return user, exists
+}
+
+func (s *UserStorage) GetUserLocked(userID string) (User, bool) {
+	s.Mu.RLock()
+	defer s.Mu.RUnlock()
 	user, exists := s.users[userID]
 	return user, exists
 }
 
 func (s *UserStorage) GetUserBytes(userID string) (User, bool) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
 	user, exists := s.users[userID]
 	return user, exists
 }
@@ -46,21 +46,14 @@ func (s *UserStorage) IsUserExist(userID string) bool {
 }
 
 func (s *UserStorage) UpdateUser(user User) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
 	_, exist := s.users[user.ID]
 	if !exist {
 		return
 	}
-
 	s.users[user.ID] = user
 }
 
 func (s *UserStorage) RemoveInactiveUsers() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
 	timeNow := time.Now()
 	for id, user := range s.users {
 		if timeNow.Sub(user.LastActivity) > s.userInactivityTimeout {

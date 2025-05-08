@@ -24,6 +24,9 @@ func RegisterUser(ctx echo.Context, userStorage *users.UserStorage) error {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
+	userStorage.Mu.Lock()
+	defer userStorage.Mu.Unlock()
+
 	user, exists := userStorage.GetUser(req.UserId)
 	if !exists {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": ErrUserNotFound.Error()})
