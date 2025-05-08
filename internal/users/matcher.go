@@ -32,7 +32,7 @@ func MatchUsers(userStorage *UserStorage, chatStorage *chat.Storage, waitingQueu
 
 		timeNow := time.Now()
 
-		userStorage.mu.Lock()
+		userStorage.Mu.Lock()
 		user1.ChatID = chat.ID
 		user1.LastActivity = timeNow
 		userStorage.users[user1.ID] = user1
@@ -40,7 +40,7 @@ func MatchUsers(userStorage *UserStorage, chatStorage *chat.Storage, waitingQueu
 		user2.ChatID = chat.ID
 		user2.LastActivity = timeNow
 		userStorage.users[user2.ID] = user2
-		userStorage.mu.Unlock()
+		userStorage.Mu.Unlock()
 
 		waitingQueue.RemoveUser(userID1)
 		waitingQueue.RemoveUser(userID2)

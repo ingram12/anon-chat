@@ -23,6 +23,9 @@ func SolveFirstChallenge(
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
+	userStorage.Mu.Lock()
+	defer userStorage.Mu.Unlock()
+
 	if userStorage.IsUserExist(req.Token) {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "challenge already solved"})
 	}

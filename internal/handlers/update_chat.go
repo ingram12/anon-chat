@@ -10,6 +10,11 @@ import (
 )
 
 func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage, chatStorage *chat.Storage) error {
+	userStorage.Mu.Lock()
+	chatStorage.Mu.Lock()
+	defer chatStorage.Mu.Unlock()
+	defer userStorage.Mu.Unlock()
+
 	user, exist := userStorage.GetUser(userID)
 	if !exist {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})

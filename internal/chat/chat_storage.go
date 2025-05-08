@@ -11,7 +11,7 @@ var (
 )
 
 type Storage struct {
-	mu     sync.RWMutex
+	Mu     sync.RWMutex
 	chats  map[int]*Chat
 	lastID int
 }
@@ -23,9 +23,6 @@ func NewChatStorage() *Storage {
 }
 
 func (s *Storage) CreateChat(userID1, userID2 string) (*Chat, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
 	s.lastID++
 	chat := &Chat{
 		ID:            s.lastID,
@@ -40,9 +37,6 @@ func (s *Storage) CreateChat(userID1, userID2 string) (*Chat, error) {
 }
 
 func (s *Storage) GetChat(chatID int) (*Chat, error) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
 	chat, exists := s.chats[chatID]
 	if !exists {
 		return nil, ErrChatNotFound
@@ -51,9 +45,6 @@ func (s *Storage) GetChat(chatID int) (*Chat, error) {
 }
 
 func (s *Storage) GetPeerMessages(chatID int, userID string) ([]Message, error) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
 	chat, exists := s.chats[chatID]
 	if !exists {
 		return []Message{}, ErrChatNotFound
@@ -63,9 +54,6 @@ func (s *Storage) GetPeerMessages(chatID int, userID string) ([]Message, error) 
 }
 
 func (s *Storage) RemovePeerMessages(chatID int, userID string) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
 	chat, exists := s.chats[chatID]
 	if !exists {
 		return ErrChatNotFound
@@ -83,9 +71,6 @@ func (s *Storage) RemovePeerMessages(chatID int, userID string) error {
 }
 
 func (s *Storage) AddMessage(chatID int, userID string, message string) (time.Time, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
 	chat, exists := s.chats[chatID]
 	if !exists {
 		return time.Time{}, ErrChatNotFound
@@ -110,9 +95,6 @@ func (s *Storage) AddMessage(chatID int, userID string, message string) (time.Ti
 }
 
 func (s *Storage) QuitChat(chatID int, userID string) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
 	chat, exists := s.chats[chatID]
 	if !exists {
 		return ErrChatNotFound
@@ -130,9 +112,6 @@ func (s *Storage) QuitChat(chatID int, userID string) error {
 }
 
 func (s *Storage) IsUserInChat(chatID int, userID string) bool {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
 	chat, exists := s.chats[chatID]
 	if !exists {
 		return false
@@ -142,9 +121,6 @@ func (s *Storage) IsUserInChat(chatID int, userID string) bool {
 }
 
 func (s *Storage) IsActiveChat(chatID int) bool {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
 	chat, exists := s.chats[chatID]
 	if !exists {
 		return false
