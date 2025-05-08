@@ -19,11 +19,11 @@ import (
 func main() {
 	dev := flag.Bool("dev", false, "Run in development mode (with frontend proxy)")
 	port := flag.Int("port", 8080, "Port")
+	useHTTPS := flag.Bool("https", false, "Enable HTTPS")
 	flag.Parse()
 
 	e := echo.New()
 
-	// Add limit of 128K to the request body
 	e.Use(middleware.BodyLimit("128K"))
 
 	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
@@ -55,21 +55,19 @@ func main() {
 	api.RegisterHandlers(e, server)
 
 	if *dev {
-		// Прокси dev-сервера Vite через Go
 		target, _ := url.Parse("http://localhost:5173")
 		proxy := httputil.NewSingleHostReverseProxy(target)
-
-		// Всё кроме /api отдаём через прокси
 		e.GET("/*", echo.WrapHandler(proxy))
 	} else {
-		// В продакшне отдаем собранный фронт
 		e.Static("/", "frontend")
 		e.GET("/", func(c echo.Context) error {
 			return c.File("frontend/index.html")
 		})
 	}
 
-	e.Logger.Fatal(
-		e.Start(fmt.Sprintf(":%d", *port)),
-	)
+	if *useHTTPS {
+		e.Logger.Fatal(e.StartTLS(fmt.Sprintf(":%d", *port), "server.crt", "server.key"))
+	} else {
+		e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", *port)))
+	}
 }
