@@ -78,9 +78,6 @@ export async function waitChat(userId: string): Promise<any> {
 
 export async function updateChat(userId: string): Promise<any> {
     const response = await fetch(`${API_BASE_URL}/chat/update/${userId}`);
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
     return await response.json();
 }
 
@@ -102,10 +99,5 @@ export async function sendMessage(userId: string, message: string): Promise<any>
 
 export async function quitChat(userId: string): Promise<any> {
     const response = await fetch(`${API_BASE_URL}/chat/quit/${userId}`);
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
     return await response.json();
 }

@@ -26,7 +26,13 @@
   let messageInput: string = '';
   let peerNickname: string | null = null;
   let chatUpdateInterval: ReturnType<typeof setInterval>;
+  let messagesContainer: HTMLDivElement;
 
+  function scrollToBottom() {
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  }
 
   onMount(() => {
     cryptoHandler = new E2ECryptoHandler();
@@ -91,7 +97,7 @@
       state = 'waiting';
       waitForPeer();
     } catch (e) {
-      error = `Registration error: ${e instanceof Error ? e.message : String(e)}`;
+      state = 'initial';
     } finally {
       loading = false;
     }
@@ -106,15 +112,15 @@
           await cryptoHandler.setPeerPublicKey(response.peerPublicKey);
           peerNickname = response.nickname;
           state = 'chatting';
+          messages = [];
           startChatUpdates();
           break;
         }
         
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
     } catch (e) {
-      error = `Error while waiting for peer: ${e instanceof Error ? e.message : String(e)}`;
-      state = 'disconnected';
+      state = 'initial';
     }
   }
 
@@ -123,21 +129,30 @@
   }
 
   async function checkForMessages() {
-    try {
-      const response = await updateChat(userId);
-      
-      if (response.status === 'closed') {
-        clearInterval(chatUpdateInterval);
-        state = 'disconnected';
-        return;
-      }
+    const response = await updateChat(userId);
 
-      for (const msg of response.messages) {
-        const decrypted = await cryptoHandler.decrypt(msg.message);
-        messages = [...messages, { text: decrypted, fromPeer: true, timestamp: new Date(msg.timestamp) }];
-      }
-    } catch (e) {
-      console.error('Error checking messages:', e);
+    if (response?.error === 'User not found') {
+      clearInterval(chatUpdateInterval);
+      messages = [{ text: 'Logout :(', fromPeer: true, timestamp: new Date() }, ...messages];
+      return;
+    }
+
+    if (response.ok === false) {
+      return;
+    }
+    
+    if (response.status === 'closed') {
+      clearInterval(chatUpdateInterval);
+      messages = [{ text: 'Your peer live chat :(', fromPeer: true, timestamp: new Date() }, ...messages];
+      return;
+    }
+
+    for (const msg of response.messages) {
+      const decrypted = await cryptoHandler.decrypt(msg.message);
+      messages = [{ text: decrypted, fromPeer: true, timestamp: new Date(msg.timestamp) }, ...messages];
+    }
+    if (response.messages.length > 0) {
+      scrollToBottom();
     }
   }
 
@@ -148,8 +163,9 @@
       const encrypted = await cryptoHandler.encrypt(messageInput);
       await sendMessage(userId, encrypted);
       
-      messages = [...messages, { text: messageInput, fromPeer: false, timestamp: new Date() }];
+      messages = [{ text: messageInput, fromPeer: false, timestamp: new Date() }, ...messages];
       messageInput = '';
+      scrollToBottom();
     } catch (e) {
       error = `Failed to send message: ${e instanceof Error ? e.message : String(e)}`;
     }
@@ -183,25 +199,26 @@
 </script>
 
 <main>
-  <h1>Anonymous Chat</h1>
-
   {#if error}
     <div class="error">{error}</div>
   {/if}
 
   {#if state === 'initial'}
     <div class="start-screen">
+      <h1>Anonymous Chat</h1>
       <button on:click={startChat} disabled={loading}>
         {loading ? 'Starting...' : 'Start Chat'}
       </button>
     </div>
   {:else if state === 'solving'}
     <div class="solving">
+      <h1>Anonymous Chat</h1>
       <h2>Solving challenge...</h2>
       <div class="loading-spinner"></div>
     </div>
   {:else if state === 'registration'}
     <div class="registration">
+      <h1>Anonymous Chat</h1>
       <h2>Enter Your Details</h2>
       <form on:submit|preventDefault={submitRegistration}>
         <div class="form-group">
@@ -221,21 +238,22 @@
     </div>
   {:else if state === 'waiting'}
     <div class="waiting">
+      <h1>Anonymous Chat</h1>
       <h2>Waiting for a chat partner...</h2>
       <div class="loading-spinner"></div>
     </div>
   {:else if state === 'chatting'}
     <div class="chat">
       <div class="chat-header">
-        <h2>Chatting with {peerNickname}</h2>
+        <h2>Chatting with <span style='color:#4b806d'>{peerNickname}</span></h2>
         <button class="quit-button" on:click={handleQuit}>Leave Chat</button>
       </div>
       
-      <div class="messages">
+      <div class="messages" bind:this={messagesContainer}>
         {#each messages as message}
           <div class="message {message.fromPeer ? 'peer' : 'self'}">
+            <div class="message-time">{message.timestamp.toLocaleTimeString()} | {message.fromPeer ? 'peer' : 'me'}</div>
             <div class="message-content">{message.text}</div>
-            <div class="message-time">{message.timestamp.toLocaleTimeString()}</div>
           </div>
         {/each}
       </div>
@@ -252,6 +270,7 @@
     </div>
   {:else if state === 'disconnected'}
     <div class="disconnected">
+      <h1>Anonymous Chat</h1>
       <h2>Chat Ended</h2>
       <p>Your chat partner has disconnected.</p>
       <button on:click={startNewChat}>Start New Chat</button>
@@ -269,19 +288,22 @@
   }
 
   main {
-    max-width: 800px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 0;
     background-color: #1e1e1e;
-    border-radius: 8px;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
-    min-height: 80vh;
+    min-height: 100vh;
   }
 
   h1 {
     text-align: center;
     margin-bottom: 2rem;
     color: #ffffff;
+  }
+
+  h2 {
+    margin: 0;
+    font-weight: normal;
   }
 
   .error {
@@ -298,7 +320,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 300px;
+    padding-top: 22vh;
   }
 
   .form-group {
@@ -343,7 +365,7 @@
   .chat {
     display: flex;
     flex-direction: column;
-    height: 70vh;
+    height: 100vh;
   }
 
   .chat-header {
@@ -360,38 +382,62 @@
     overflow-y: auto;
     padding: 1rem;
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
     background-color: #252525;
   }
 
+  /* Scrollbar styling for Webkit browsers (Chrome, Safari, etc.) */
+  .messages::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .messages::-webkit-scrollbar-track {
+    background: #454545;
+    border-radius: 4px;
+  }
+
+  .messages::-webkit-scrollbar-thumb {
+    background: #313131;
+    border-radius: 4px;
+  }
+
+  .messages::-webkit-scrollbar-thumb:hover {
+    background: #252525;
+  }
+
+  /* Scrollbar styling for Firefox */
+  .messages {
+    scrollbar-width: thin;
+    scrollbar-color: #454545 #252525;
+  }
+
   .message {
-    max-width: 70%;
-    padding: 0.8rem;
-    border-radius: 8px;
+    max-width: 96%;
+    padding: 0.4rem;
+    border-radius: 4px;
     position: relative;
   }
 
   .message.peer {
-    background-color: #2a2a2a;
+    background-color: #283531;
     align-self: flex-start;
   }
 
   .message.self {
-    background-color: #2b5582;
-    align-self: flex-end;
+    background-color: #2b3044;
+    align-self: flex-start;
   }
 
   .message-time {
-    font-size: 0.8rem;
+    font-size: 0.5rem;
     color: #999;
-    margin-top: 0.3rem;
   }
 
   .message-input {
     display: flex;
     gap: 1rem;
-    padding: 1rem;
+    padding: 1rem 1rem 2rem 1rem;
     background-color: #2a2a2a;
     border-radius: 0 0 4px 4px;
   }
@@ -416,10 +462,10 @@
   }
 
   .quit-button {
-    background-color: #c53030;
+    background-color: #6f2323;
   }
 
   .quit-button:hover {
-    background-color: #e53e3e;
+    background-color: #591414;
   }
 </style>
