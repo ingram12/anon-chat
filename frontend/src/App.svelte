@@ -97,7 +97,7 @@
       state = 'waiting';
       waitForPeer();
     } catch (e) {
-      error = `Registration error: ${e instanceof Error ? e.message : String(e)}`;
+      state = 'initial';
     } finally {
       loading = false;
     }
@@ -117,11 +117,10 @@
           break;
         }
         
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
     } catch (e) {
-      error = `Error while waiting for peer: ${e instanceof Error ? e.message : String(e)}`;
-      state = 'disconnected';
+      state = 'initial';
     }
   }
 
@@ -130,24 +129,30 @@
   }
 
   async function checkForMessages() {
-    try {
-      const response = await updateChat(userId);
-      
-      if (response.status === 'closed') {
-        clearInterval(chatUpdateInterval);
-        messages = [{ text: 'Your peer live chat :(', fromPeer: true, timestamp: new Date() }, ...messages];
-        return;
-      }
+    const response = await updateChat(userId);
 
-      for (const msg of response.messages) {
-        const decrypted = await cryptoHandler.decrypt(msg.message);
-        messages = [{ text: decrypted, fromPeer: true, timestamp: new Date(msg.timestamp) }, ...messages];
-      }
-      if (response.messages.length > 0) {
-        scrollToBottom();
-      }
-    } catch (e) {
-      console.error('Error checking messages:', e);
+    if (response?.error === 'User not found') {
+      clearInterval(chatUpdateInterval);
+      messages = [{ text: 'Logout :(', fromPeer: true, timestamp: new Date() }, ...messages];
+      return;
+    }
+
+    if (response.ok === false) {
+      return;
+    }
+    
+    if (response.status === 'closed') {
+      clearInterval(chatUpdateInterval);
+      messages = [{ text: 'Your peer live chat :(', fromPeer: true, timestamp: new Date() }, ...messages];
+      return;
+    }
+
+    for (const msg of response.messages) {
+      const decrypted = await cryptoHandler.decrypt(msg.message);
+      messages = [{ text: decrypted, fromPeer: true, timestamp: new Date(msg.timestamp) }, ...messages];
+    }
+    if (response.messages.length > 0) {
+      scrollToBottom();
     }
   }
 
