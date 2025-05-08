@@ -303,6 +303,7 @@
 
   h2 {
     margin: 0;
+    font-weight: normal;
   }
 
   .error {
@@ -319,6 +320,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding-top: 22vh;
   }
 
   .form-group {
@@ -418,12 +420,12 @@
   }
 
   .message.peer {
-    background-color: #2d4f43;
+    background-color: #283531;
     align-self: flex-start;
   }
 
   .message.self {
-    background-color: #383b47;
+    background-color: #2b3044;
     align-self: flex-start;
   }
 
