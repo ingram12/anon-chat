@@ -183,25 +183,26 @@
 </script>
 
 <main>
-  <h1>Anonymous Chat</h1>
-
   {#if error}
     <div class="error">{error}</div>
   {/if}
 
   {#if state === 'initial'}
     <div class="start-screen">
+      <h1>Anonymous Chat</h1>
       <button on:click={startChat} disabled={loading}>
         {loading ? 'Starting...' : 'Start Chat'}
       </button>
     </div>
   {:else if state === 'solving'}
     <div class="solving">
+      <h1>Anonymous Chat</h1>
       <h2>Solving challenge...</h2>
       <div class="loading-spinner"></div>
     </div>
   {:else if state === 'registration'}
     <div class="registration">
+      <h1>Anonymous Chat</h1>
       <h2>Enter Your Details</h2>
       <form on:submit|preventDefault={submitRegistration}>
         <div class="form-group">
@@ -221,6 +222,7 @@
     </div>
   {:else if state === 'waiting'}
     <div class="waiting">
+      <h1>Anonymous Chat</h1>
       <h2>Waiting for a chat partner...</h2>
       <div class="loading-spinner"></div>
     </div>
@@ -252,6 +254,7 @@
     </div>
   {:else if state === 'disconnected'}
     <div class="disconnected">
+      <h1>Anonymous Chat</h1>
       <h2>Chat Ended</h2>
       <p>Your chat partner has disconnected.</p>
       <button on:click={startNewChat}>Start New Chat</button>
@@ -269,13 +272,11 @@
   }
 
   main {
-    max-width: 800px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 0;
     background-color: #1e1e1e;
-    border-radius: 8px;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
-    min-height: 80vh;
+    min-height: 100vh;
   }
 
   h1 {
@@ -298,7 +299,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 300px;
   }
 
   .form-group {
@@ -343,7 +343,7 @@
   .chat {
     display: flex;
     flex-direction: column;
-    height: 70vh;
+    height: 100vh;
   }
 
   .chat-header {
