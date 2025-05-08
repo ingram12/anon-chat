@@ -20,6 +20,7 @@ build-frontend:
 	cp -r frontend/dist/. ./build/frontend
 
 build-backend:
+	go mod download
 	go build -o build/server ./cmd/server
 
 build: build-frontend build-backend
