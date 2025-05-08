@@ -17,7 +17,7 @@
   let nonce: string = '';
 
   // User data
-  let nickname: string = '';
+  let nickname: string = 'anon228';
   let tags: string[] = [];
   let cryptoHandler: E2ECryptoHandler;
 
@@ -36,11 +36,6 @@
 
   onMount(() => {
     cryptoHandler = new E2ECryptoHandler();
-    return () => {
-      if (chatUpdateInterval) {
-        clearInterval(chatUpdateInterval);
-      }
-    };
   });
 
   async function startChat() {
@@ -113,46 +108,46 @@
           peerNickname = response.nickname;
           state = 'chatting';
           messages = [];
-          startChatUpdates();
+          checkForMessages();
           break;
         }
-        
-        await new Promise(resolve => setTimeout(resolve, 2000));
       }
     } catch (e) {
       state = 'initial';
     }
   }
 
-  function startChatUpdates() {
-    chatUpdateInterval = setInterval(checkForMessages, 1000);
-  }
-
   async function checkForMessages() {
-    const response = await updateChat(userId);
+    while (state === 'chatting') {
+      const response = await updateChat(userId);
 
-    if (response?.error === 'User not found') {
-      clearInterval(chatUpdateInterval);
-      messages = [{ text: 'Logout :(', fromPeer: true, timestamp: new Date() }, ...messages];
-      return;
-    }
+      if (response?.error === 'User not found') {
+        messages = [{ text: 'Logout :(', fromPeer: true, timestamp: new Date() }, ...messages];
+        return;
+      }
 
-    if (response.ok === false) {
-      return;
-    }
-    
-    if (response.status === 'closed') {
-      clearInterval(chatUpdateInterval);
-      messages = [{ text: 'Your peer live chat :(', fromPeer: true, timestamp: new Date() }, ...messages];
-      return;
-    }
+      if (response.ok === false) {
+        continue;
+      }
+      
+      if (response.status === 'closed') {
+        messages = [{ text: 'Your peer live chat :(', fromPeer: true, timestamp: new Date() }, ...messages];
+        return;
+      }
 
-    for (const msg of response.messages) {
-      const decrypted = await cryptoHandler.decrypt(msg.message);
-      messages = [{ text: decrypted, fromPeer: true, timestamp: new Date(msg.timestamp) }, ...messages];
-    }
-    if (response.messages.length > 0) {
-      scrollToBottom();
+      if (response.status === 'active' && response.messages === null) {
+        continue;
+      }
+
+      for (const msg of response.messages) {
+        const decrypted = await cryptoHandler.decrypt(msg.message);
+        messages = [{ text: decrypted, fromPeer: true, timestamp: new Date(msg.timestamp) }, ...messages];
+      }
+      if (response.messages.length > 0) {
+        scrollToBottom();
+      }
+
+      console.log('state:', state);
     }
   }
 
@@ -174,7 +169,6 @@
   async function handleQuit() {
     try {
       await quitChat(userId);
-      clearInterval(chatUpdateInterval);
       state = 'waiting';
       waitForPeer();
     } catch (e) {
