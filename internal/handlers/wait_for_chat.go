@@ -71,7 +71,7 @@ func WaitForChat(
 				return ctx.JSON(http.StatusOK, resp)
 			}
 		}
-	case <-time.After(10 * time.Second): // TODO: make it configurable
+	case <-time.After(15 * time.Second): // TODO: make it configurable
 	case <-ctx.Request().Context().Done():
 	}
 
