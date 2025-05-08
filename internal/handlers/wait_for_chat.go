@@ -17,13 +17,13 @@ func WaitForChat(
 	chatStorage *chat.Storage,
 	waitingQueue *users.WaitingQueue,
 ) error {
-	user, exist := userStorage.GetUser(userID)
+	user, exist := userStorage.GetUserLocked(userID)
 	if !exist {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 	}
 
-	waitingQueue.AddUser(user.ID)
-	defer waitingQueue.RemoveUser(user.ID)
+	waitingQueue.AddUserLocked(user.ID)
+	defer waitingQueue.RemoveUserLocked(user.ID)
 
 	waitChan := make(chan int, 1)
 
@@ -37,7 +37,7 @@ func WaitForChat(
 				return
 			case <-ticker.C:
 				waitingQueue.TryMatch(chatStorage, userStorage)
-				user, _ := userStorage.GetUser(userID)
+				user, _ := userStorage.GetUserLocked(userID)
 				if user.ChatID != 0 {
 					waitChan <- user.ChatID
 					return
@@ -48,6 +48,11 @@ func WaitForChat(
 
 	select {
 	case chatID := <-waitChan:
+		userStorage.Mu.Lock()
+		chatStorage.Mu.Lock()
+		defer chatStorage.Mu.Unlock()
+		defer userStorage.Mu.Unlock()
+
 		user, exist := userStorage.GetUser(userID)
 		if !exist {
 			return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})

@@ -8,7 +8,7 @@ import (
 )
 
 type WaitingQueue struct {
-	mu         sync.RWMutex
+	Mu         sync.RWMutex
 	users      map[string]time.Time
 	isMatching bool
 }
@@ -21,27 +21,30 @@ func NewWaitingQueue() *WaitingQueue {
 }
 
 func (wq *WaitingQueue) AddUser(userID string) {
-	wq.mu.Lock()
-	defer wq.mu.Unlock()
 	wq.users[userID] = time.Now()
 }
 
 func (wq *WaitingQueue) RemoveUser(userID string) {
-	wq.mu.Lock()
-	defer wq.mu.Unlock()
 	delete(wq.users, userID)
 }
 
+func (wq *WaitingQueue) AddUserLocked(userID string) {
+	wq.Mu.Lock()
+	defer wq.Mu.Unlock()
+	wq.AddUser(userID)
+}
+
+func (wq *WaitingQueue) RemoveUserLocked(userID string) {
+	wq.Mu.Lock()
+	defer wq.Mu.Unlock()
+	wq.RemoveUser(userID)
+}
+
 func (wq *WaitingQueue) GetLen() int {
-	wq.mu.RLock()
-	defer wq.mu.RUnlock()
 	return len(wq.users)
 }
 
 func (wq *WaitingQueue) GetTwoRandomUsers() (string, string, error) {
-	wq.mu.RLock()
-	defer wq.mu.RUnlock()
-
 	if len(wq.users) < 2 {
 		return "", "", errors.New("not enough users")
 	}
@@ -60,19 +63,19 @@ func (wq *WaitingQueue) GetTwoRandomUsers() (string, string, error) {
 }
 
 func (wq *WaitingQueue) TryMatch(chatStorage *chat.Storage, userStorage *UserStorage) {
-	wq.mu.Lock()
+	wq.Mu.Lock()
 	if wq.isMatching {
-		wq.mu.Unlock()
+		wq.Mu.Unlock()
 		return // Already matching
 	}
 	wq.isMatching = true
-	wq.mu.Unlock()
+	wq.Mu.Unlock()
 
 	go func() {
 		defer func() {
-			wq.mu.Lock()
+			wq.Mu.Lock()
 			wq.isMatching = false
-			wq.mu.Unlock()
+			wq.Mu.Unlock()
 		}()
 
 		MatchUsers(userStorage, chatStorage, wq)

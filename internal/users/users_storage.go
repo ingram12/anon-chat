@@ -28,6 +28,13 @@ func (s *UserStorage) GetUser(userID string) (User, bool) {
 	return user, exists
 }
 
+func (s *UserStorage) GetUserLocked(userID string) (User, bool) {
+	s.Mu.RLock()
+	defer s.Mu.RUnlock()
+	user, exists := s.users[userID]
+	return user, exists
+}
+
 func (s *UserStorage) GetUserBytes(userID string) (User, bool) {
 	user, exists := s.users[userID]
 	return user, exists
