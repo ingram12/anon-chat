@@ -1,6 +1,7 @@
 package config
 
 import (
+	"anon-chat/internal/token"
 	"os"
 	"time"
 )
@@ -12,17 +13,26 @@ type Config struct {
 	UserInactivityTimeout    time.Duration
 }
 
-func NewConfig() *Config {
+func NewConfig(isdev bool) *Config {
 	secretKey := os.Getenv("TOKEN_SECRET_KEY")
 
 	if secretKey == "" {
-		secretKey = "DEFAULT-SECRET-KEY-ALARMfgsjffsr"
+		if isdev {
+			secretKey = "DEFAULT-SECRET-KEY-ALARMfgsjffsr"
+		} else {
+			secretKey = token.RandomKey()
+		}
+	}
+
+	firstChallengeDifficulty := 3000
+	if isdev {
+		firstChallengeDifficulty = 1
 	}
 
 	return &Config{
 		TokenSecretKey:           secretKey,
-		FirstChallengeDifficulty: 300,
-		RotatingTokenLifeTime:    120 * time.Second,
+		FirstChallengeDifficulty: firstChallengeDifficulty,
+		RotatingTokenLifeTime:    180 * time.Second,
 		UserInactivityTimeout:    1800 * time.Second,
 	}
 }

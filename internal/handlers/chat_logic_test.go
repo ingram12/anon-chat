@@ -23,7 +23,7 @@ type testContext struct {
 }
 
 func setupTest(t *testing.T) *testContext {
-	configuration := config.NewConfig()
+	configuration := config.NewConfig(false)
 	configuration.FirstChallengeDifficulty = 1
 
 	userService := NewServer(configuration)

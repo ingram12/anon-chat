@@ -50,7 +50,7 @@ func main() {
 		},
 	}))
 
-	configuration := config.NewConfig()
+	configuration := config.NewConfig(*dev)
 	server := handlers.NewServer(configuration)
 	api.RegisterHandlers(e, server)
 
