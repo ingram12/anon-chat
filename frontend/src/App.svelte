@@ -462,10 +462,12 @@
   }
 
   .quit-button {
-    background-color: #6f2323;
+    background-color: #442827;
+    color: #634a4b;
   }
 
   .quit-button:hover {
-    background-color: #591414;
+    background-color: #51201d;
+    color: #907676;
   }
 </style>
