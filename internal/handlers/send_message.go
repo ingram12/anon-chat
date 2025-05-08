@@ -15,6 +15,11 @@ func SendChatMessage(ctx echo.Context, userID string, userStorage *users.UserSto
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
+	userStorage.Mu.RLock()
+	chatStorage.Mu.Lock()
+	defer chatStorage.Mu.Unlock()
+	defer userStorage.Mu.RUnlock()
+
 	user, exists := userStorage.GetUser(userID)
 	if !exists {
 		return ctx.JSON(http.StatusNotFound, echo.Map{"error": "User not found"})
