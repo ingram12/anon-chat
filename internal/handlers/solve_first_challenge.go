@@ -55,7 +55,7 @@ func SolveFirstChallenge(
 			LastActivity:     timeNow,
 			CurrentChallenge: newChallenge,
 			IsRegistered:     false,
-			Difficulty:       100,
+			Difficulty:       int(req.Difficulty/3 + 1),
 		},
 	)
 
