@@ -26,9 +26,7 @@ func main() {
 
 	e.Use(middleware.BodyLimit("128K"))
 
-	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
-		Level: 5,
-	}))
+	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{Level: 5}))
 
 	// Add route to serve swagger.json
 	e.GET("/swagger.json", func(c echo.Context) error {
