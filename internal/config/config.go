@@ -24,7 +24,7 @@ func NewConfig(isdev bool) *Config {
 		}
 	}
 
-	firstChallengeDifficulty := 3000
+	firstChallengeDifficulty := 9999
 	if isdev {
 		firstChallengeDifficulty = 1
 	}
