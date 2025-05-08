@@ -45,7 +45,6 @@ func TestChatFlow(t *testing.T) {
 	solveResp2 := tc.solveFirstChallenge(response2)
 	regResp2 := tc.registerUser(solveResp2)
 
-	// Wait for chat
 	var wg sync.WaitGroup
 	wg.Add(2)
 	go func() {
@@ -58,11 +57,9 @@ func TestChatFlow(t *testing.T) {
 	}()
 	wg.Wait()
 
-	// Update chat
 	tc.updateChat(regResp1.UserId)
 	tc.updateChat(regResp2.UserId)
 
-	// Send messages
 	tc.sendChatMessage(regResp1.UserId, "Hello from user 1")
 	tc.sendChatMessage(regResp2.UserId, "Hello from user 2")
 
