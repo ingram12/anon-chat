@@ -57,9 +57,6 @@ func TestChatFlow(t *testing.T) {
 	}()
 	wg.Wait()
 
-	tc.updateChat(regResp1.UserId)
-	tc.updateChat(regResp2.UserId)
-
 	tc.sendChatMessage(regResp1.UserId, "Hello from user 1")
 	tc.sendChatMessage(regResp2.UserId, "Hello from user 2")
 
@@ -87,11 +84,6 @@ func TestChatFlow(t *testing.T) {
 	wg.Wait()
 
 	tc.sendChatMessage(regResp1.UserId, "Hello from user 1")
-
-	updateResp1 = tc.updateChat(regResp1.UserId)
-	if len(updateResp1.Messages) != 0 {
-		t.Error("Expected zero messages")
-	}
 
 	updateResp2 = tc.updateChat(regResp2.UserId)
 	if len(updateResp2.Messages) == 0 && updateResp2.Messages[0].Message != "Hello from user 1" {

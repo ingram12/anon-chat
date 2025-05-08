@@ -53,6 +53,19 @@ func (s *Storage) GetPeerMessages(chatID int, userID string) ([]Message, error) 
 	return chat.GetPeerMessages(userID), nil
 }
 
+func (s *Storage) HasNewMessages(chatID int, userID string) bool {
+	chat, exists := s.chats[chatID]
+	if !exists {
+		return false
+	}
+	if chat.UserID1 == userID {
+		return len(chat.User2Messages) > 0
+	} else if chat.UserID2 == userID {
+		return len(chat.User1Messages) > 0
+	}
+	return false
+}
+
 func (s *Storage) RemovePeerMessages(chatID int, userID string) error {
 	chat, exists := s.chats[chatID]
 	if !exists {
