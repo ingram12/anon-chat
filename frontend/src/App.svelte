@@ -393,23 +393,23 @@
   }
 
   .messages::-webkit-scrollbar-track {
-    background: #1a1a1a;
+    background: #454545;
     border-radius: 4px;
   }
 
   .messages::-webkit-scrollbar-thumb {
-    background: #4a4a4a;
+    background: #313131;
     border-radius: 4px;
   }
 
   .messages::-webkit-scrollbar-thumb:hover {
-    background: #5a5a5a;
+    background: #252525;
   }
 
   /* Scrollbar styling for Firefox */
   .messages {
     scrollbar-width: thin;
-    scrollbar-color: #4a4a4a #1a1a1a;
+    scrollbar-color: #454545 #252525;
   }
 
   .message {
