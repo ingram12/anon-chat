@@ -41,6 +41,13 @@ func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage,
 				}
 
 				chatID := user.ChatID
+				if !chatStorage.IsActiveChat(chatID) {
+					chatStorage.Mu.RUnlock()
+					userStorage.Mu.RUnlock()
+					waitChan <- 0
+					return
+				}
+
 				if chatStorage.HasNewMessages(chatID, user.ID) {
 					chatStorage.Mu.RUnlock()
 					userStorage.Mu.RUnlock()
