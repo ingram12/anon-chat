@@ -3,6 +3,7 @@ package handlers
 import (
 	"anon-chat/internal/chat"
 	"anon-chat/internal/config"
+	"anon-chat/internal/maintenance"
 	"anon-chat/internal/token"
 	"anon-chat/internal/users"
 
@@ -26,6 +27,7 @@ func NewServer(cfg *config.Config) *Server {
 		chatStorage:   chat.NewChatStorage(),
 	}
 
+	server.StartCleaner()
 	return &server
 }
 
@@ -55,4 +57,15 @@ func (s *Server) SendChatMessage(ctx echo.Context, userID string) error {
 
 func (s *Server) QuitChat(ctx echo.Context, userID string) error {
 	return QuitChat(ctx, userID, s.userStorage, s.chatStorage)
+}
+
+func (s *Server) StartCleaner() {
+	cleaner := maintenance.NewCleaner(
+		s.userStorage,
+		s.waitingQueue,
+		s.chatStorage,
+		s.cfg.UserInactivityTimeout,
+		s.cfg.RotatingTokenLifeTime,
+	)
+	cleaner.Start()
 }
