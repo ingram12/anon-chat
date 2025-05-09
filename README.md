@@ -5,9 +5,11 @@
 
 An anonymous chat application with **end-to-end encrypted messages** and **Proof-of-Work (PoW) based protection** against spam and abuse.
 
-- ❌ No cookies 
-- ❌ No IP tracking 
-- ❌ No email or phone required
+- ❌ No cookies  
+- ❌ No IP tracking  
+- ❌ No email or phone required  
+- ❌ No real name (unless you choose to share one)  
+- ❌ No ID or passport verification
 
 ## How It Works
 
