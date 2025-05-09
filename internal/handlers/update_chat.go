@@ -29,27 +29,27 @@ func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage,
 			case <-ctx.Request().Context().Done():
 				return
 			case <-ticker.C:
-				userStorage.Mu.Lock()
-				chatStorage.Mu.Lock()
+				userStorage.Mu.RLock()
+				chatStorage.Mu.RLock()
 
 				user, exist := userStorage.GetUser(userID)
 				if !exist {
-					chatStorage.Mu.Unlock()
-					userStorage.Mu.Unlock()
+					chatStorage.Mu.RUnlock()
+					userStorage.Mu.RUnlock()
 					waitChan <- 0
 					return
 				}
 
 				chatID := user.ChatID
 				if chatStorage.HasNewMessages(chatID, user.ID) {
-					chatStorage.Mu.Unlock()
-					userStorage.Mu.Unlock()
+					chatStorage.Mu.RUnlock()
+					userStorage.Mu.RUnlock()
 					waitChan <- chatID
 					return
 				}
 
-				chatStorage.Mu.Unlock()
-				userStorage.Mu.Unlock()
+				chatStorage.Mu.RUnlock()
+				userStorage.Mu.RUnlock()
 			}
 		}
 	}()
@@ -63,10 +63,10 @@ func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage,
 			return ctx.JSON(http.StatusOK, resp)
 		}
 
-		userStorage.Mu.Lock()
+		userStorage.Mu.RLock()
 		chatStorage.Mu.Lock()
 		defer chatStorage.Mu.Unlock()
-		defer userStorage.Mu.Unlock()
+		defer userStorage.Mu.RUnlock()
 
 		user, exist := userStorage.GetUser(userID)
 		if !exist {
@@ -96,7 +96,7 @@ func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage,
 			Messages: respMessages,
 		}
 		return ctx.JSON(http.StatusOK, resp)
-	case <-time.After(3 * time.Second): // TODO: make it configurable
+	case <-time.After(15 * time.Second): // TODO: make it configurable
 	case <-ctx.Request().Context().Done():
 	}
 
