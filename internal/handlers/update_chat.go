@@ -10,16 +10,20 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type waitResult struct {
+	ChatID int
+	Closed bool
+}
+
 func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage, chatStorage *chat.Storage) error {
 	userStorage.Mu.RLock()
 	_, exist := userStorage.GetUser(userID)
+	userStorage.Mu.RUnlock()
 	if !exist {
-		userStorage.Mu.RUnlock()
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 	}
-	userStorage.Mu.RUnlock()
 
-	waitChan := make(chan int, 1)
+	waitChan := make(chan waitResult, 1)
 
 	go func() {
 		ticker := time.NewTicker(200 * time.Millisecond)
@@ -37,7 +41,10 @@ func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage,
 				if !exist {
 					chatStorage.Mu.RUnlock()
 					userStorage.Mu.RUnlock()
-					waitChan <- 0
+					select {
+					case waitChan <- waitResult{Closed: true}:
+					case <-ctx.Request().Context().Done():
+					}
 					return
 				}
 
@@ -45,14 +52,20 @@ func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage,
 				if !chatStorage.IsActiveChat(chatID) {
 					chatStorage.Mu.RUnlock()
 					userStorage.Mu.RUnlock()
-					waitChan <- 0
+					select {
+					case waitChan <- waitResult{Closed: true}:
+					case <-ctx.Request().Context().Done():
+					}
 					return
 				}
 
 				if chatStorage.HasNewMessages(chatID, user.ID) {
 					chatStorage.Mu.RUnlock()
 					userStorage.Mu.RUnlock()
-					waitChan <- chatID
+					select {
+					case waitChan <- waitResult{ChatID: chatID}:
+					case <-ctx.Request().Context().Done():
+					}
 					return
 				}
 
@@ -63,33 +76,27 @@ func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage,
 	}()
 
 	select {
-	case chatID := <-waitChan:
-		if chatID == 0 {
-			resp := api.UpdateChatResponse{
-				Status: "closed",
-			}
-			return ctx.JSON(http.StatusOK, resp)
+	case result := <-waitChan:
+		if result.Closed {
+			return ctx.JSON(http.StatusOK, api.UpdateChatResponse{Status: "closed"})
 		}
 
 		userStorage.Mu.RLock()
 		chatStorage.Mu.Lock()
-		defer chatStorage.Mu.Unlock()
 		defer userStorage.Mu.RUnlock()
+		defer chatStorage.Mu.Unlock()
 
 		user, exist := userStorage.GetUser(userID)
 		if !exist {
 			return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 		}
 
-		if user.ChatID != chatID || !chatStorage.IsActiveChat(chatID) {
-			resp := api.UpdateChatResponse{
-				Status: "closed",
-			}
-			return ctx.JSON(http.StatusOK, resp)
+		if user.ChatID != result.ChatID || !chatStorage.IsActiveChat(result.ChatID) {
+			return ctx.JSON(http.StatusOK, api.UpdateChatResponse{Status: "closed"})
 		}
 
-		messages, _ := chatStorage.GetPeerMessages(chatID, user.ID)
-		_ = chatStorage.RemovePeerMessages(chatID, user.ID) // TODO: check if this is correct
+		messages, _ := chatStorage.GetPeerMessages(result.ChatID, user.ID)
+		chatStorage.RemovePeerMessages(result.ChatID, user.ID) // TODO: add aprove delivery message
 
 		respMessages := make([]api.ChatMessage, len(messages))
 		for i, msg := range messages {
@@ -99,17 +106,13 @@ func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage,
 			}
 		}
 
-		resp := api.UpdateChatResponse{
+		return ctx.JSON(http.StatusOK, api.UpdateChatResponse{
 			Status:   "active",
 			Messages: respMessages,
-		}
-		return ctx.JSON(http.StatusOK, resp)
-	case <-time.After(15 * time.Second): // TODO: make it configurable
+		})
+	case <-time.After(15 * time.Second): // TODO: move to config
+		return ctx.JSON(http.StatusOK, api.UpdateChatResponse{Status: "active"})
 	case <-ctx.Request().Context().Done():
+		return ctx.NoContent(http.StatusRequestTimeout)
 	}
-
-	resp := api.UpdateChatResponse{
-		Status: "active",
-	}
-	return ctx.JSON(http.StatusOK, resp)
 }

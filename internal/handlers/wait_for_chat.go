@@ -10,6 +10,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type waitChatResult struct {
+	ChatID int
+}
+
 func WaitForChat(
 	ctx echo.Context,
 	userID string,
@@ -25,7 +29,7 @@ func WaitForChat(
 	waitingQueue.AddUserLocked(user.ID)
 	defer waitingQueue.RemoveUserLocked(user.ID)
 
-	waitChan := make(chan int, 1)
+	waitChan := make(chan waitChatResult, 1)
 
 	go func() {
 		ticker := time.NewTicker(100 * time.Millisecond)
@@ -37,9 +41,13 @@ func WaitForChat(
 				return
 			case <-ticker.C:
 				waitingQueue.TryMatch(chatStorage, userStorage)
-				user, _ := userStorage.GetUserLocked(userID)
-				if user.ChatID != 0 {
-					waitChan <- user.ChatID
+
+				user, exist := userStorage.GetUserLocked(userID)
+				if exist && user.ChatID != 0 {
+					select {
+					case waitChan <- waitChatResult{ChatID: user.ChatID}:
+					case <-ctx.Request().Context().Done():
+					}
 					return
 				}
 			}
@@ -47,19 +55,20 @@ func WaitForChat(
 	}()
 
 	select {
-	case chatID := <-waitChan:
+	case result := <-waitChan:
 		userStorage.Mu.Lock()
 		chatStorage.Mu.Lock()
-		defer chatStorage.Mu.Unlock()
 		defer userStorage.Mu.Unlock()
+		defer chatStorage.Mu.Unlock()
 
 		user, exist := userStorage.GetUser(userID)
 		if !exist {
 			return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 		}
 
-		chat, err := chatStorage.GetChat(chatID)
-		if err == nil && chat.IsUserInChat(user.ID) {
+		chat, _ := chatStorage.GetChat(result.ChatID)
+
+		if chat.IsUserInChat(user.ID) {
 			peerID := chat.GetPeerID(user.ID)
 			peerUser, exist := userStorage.GetUser(peerID)
 			if exist && chat.IsUserInChat(peerUser.ID) {
@@ -71,8 +80,10 @@ func WaitForChat(
 				return ctx.JSON(http.StatusOK, resp)
 			}
 		}
-	case <-time.After(15 * time.Second): // TODO: make it configurable
+
+	case <-time.After(15 * time.Second): // TODO: make configurable
 	case <-ctx.Request().Context().Done():
+		return ctx.NoContent(http.StatusRequestTimeout)
 	}
 
 	resp := api.WaitForChatResponse{
