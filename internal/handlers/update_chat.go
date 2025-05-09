@@ -16,9 +16,7 @@ type waitResult struct {
 }
 
 func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage, chatStorage *chat.Storage) error {
-	userStorage.Mu.RLock()
-	_, exist := userStorage.GetUser(userID)
-	userStorage.Mu.RUnlock()
+	_, exist := userStorage.GetUserLocked(userID)
 	if !exist {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 	}
