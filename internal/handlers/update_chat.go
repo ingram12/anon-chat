@@ -4,6 +4,7 @@ import (
 	"anon-chat/internal/api"
 	"anon-chat/internal/chat"
 	"anon-chat/internal/users"
+	"log"
 	"net/http"
 	"time"
 
@@ -93,7 +94,10 @@ func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage,
 		}
 
 		messages, _ := chatStorage.GetPeerMessages(result.ChatID, user.ID)
-		chatStorage.RemovePeerMessages(result.ChatID, user.ID) // TODO: add aprove delivery message
+		err := chatStorage.RemovePeerMessages(result.ChatID, user.ID) // TODO: add aprove delivery message
+		if err != nil {
+			log.Printf("[UpdateChat] error removing messages: %v", err)
+		}
 
 		respMessages := make([]api.ChatMessage, len(messages))
 		for i, msg := range messages {
