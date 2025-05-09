@@ -120,35 +120,40 @@
 
   async function checkForMessages() {
     while (state === 'chatting') {
-      const response = await updateChat(userId);
+      try {
+        const response = await updateChat(userId);
 
-      if (response?.error === 'User not found') {
-        messages = [{ text: 'Logout :(', fromPeer: true, timestamp: new Date() }, ...messages];
-        return;
-      }
+        if (response?.error === 'User not found') {
+          messages = [{ text: 'Logout :(', fromPeer: true, timestamp: new Date() }, ...messages];
+          return;
+        }
 
-      if (response.ok === false) {
+        if (response.ok === false) {
+          continue;
+        }
+        
+        if (response.status === 'closed') {
+          messages = [{ text: 'Your peer live chat :(', fromPeer: true, timestamp: new Date() }, ...messages];
+          return;
+        }
+
+        if (response.status === 'active' && response.messages === null) {
+          continue;
+        }
+
+        for (const msg of response.messages) {
+          const decrypted = await cryptoHandler.decrypt(msg.message);
+          messages = [{ text: decrypted, fromPeer: true, timestamp: new Date(msg.timestamp) }, ...messages];
+        }
+        if (response.messages.length > 0) {
+          scrollToBottom();
+        }
+
+        console.log('state:', state);
+      } catch (e) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         continue;
       }
-      
-      if (response.status === 'closed') {
-        messages = [{ text: 'Your peer live chat :(', fromPeer: true, timestamp: new Date() }, ...messages];
-        return;
-      }
-
-      if (response.status === 'active' && response.messages === null) {
-        continue;
-      }
-
-      for (const msg of response.messages) {
-        const decrypted = await cryptoHandler.decrypt(msg.message);
-        messages = [{ text: decrypted, fromPeer: true, timestamp: new Date(msg.timestamp) }, ...messages];
-      }
-      if (response.messages.length > 0) {
-        scrollToBottom();
-      }
-
-      console.log('state:', state);
     }
   }
 
