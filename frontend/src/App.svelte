@@ -63,7 +63,8 @@
       nonce = await solveChallenge(challenge, difficulty);
       state = 'registration';
     } catch (e) {
-      error = `Error in authentication flow: ${e instanceof Error ? e.message : String(e)}`;
+      startChat();
+      return;
     } finally {
       loading = false;
     }
