@@ -5,16 +5,17 @@
 
 An anonymous chat application with **end-to-end encrypted messages** and **Proof-of-Work (PoW) based protection** against spam and abuse.
 
-- ❌ No cookies 
-- ❌ No IP tracking 
-- ❌ No email or phone required
+- ❌ No cookies  
+- ❌ No IP tracking  
+- ❌ No email or phone required  
+- ❌ No real name (unless you choose to share one)  
+- ❌ No ID or passport verification
 
 ## How It Works
 
 Upon visiting the chat, users are presented with a computational PoW challenge. Successfully solving it grants access to the system and allows the user to search for a chat partner.
 
-The backend does **not use a database**. All data is stored in-memory only. Messages are **encrypted on the client side**, and the server **cannot decrypt** their contents.  
-Once a message is delivered to the recipient, it is **immediately deleted from server memory** and is **not stored or logged** in any form.
+The backend does **not use a database**. All data is stored in-memory only. Messages are **encrypted on the client side**, and the server **cannot decrypt** their contents. Once a message is delivered to the recipient, it is **immediately deleted from server memory** and is **not stored or logged** in any form.
 
 ## Features
 
@@ -24,10 +25,16 @@ Once a message is delivered to the recipient, it is **immediately deleted from s
 - End-to-end encrypted messages
 - Lightweight and privacy-focused
 
+## Tech Stack
+
+- **Backend:** Go (Golang)
+- **Frontend:** Svelte
+- **Build Tool:** Make
+- **API Schema:** OpenAPI 3
+
 ## Development Status ⚠️
 
-This project is currently **under active development** and is **not ready for production use**.  
-Expect bugs, missing features, and possible protocol or API changes.
+This project is currently **under active development** and is **not ready for production use**. Expect bugs, missing features, and possible protocol or API changes.
 
 ## Requirements
 
@@ -35,7 +42,7 @@ Expect bugs, missing features, and possible protocol or API changes.
 - Node.js 22 or newer
 - npm 11 or newer
 
-## Installation
+## Build and Run
 
 Clone the repository and run the following commands:
 
@@ -44,8 +51,31 @@ make build
 cd ./build
 ./server -port=8080
 ```
+After building, the `build/` directory will contain the compiled binary (`server`)  and the `frontend/` folder with static assets. The backend and frontend are bundled together: the server will serve both the **API** and the **frontend UI**.
 
-The application will be available at http://localhost:8080.
+The application will be available at [http://localhost:8080](http://localhost:8080).
+
+## Development
+
+To run the application in development mode, run the backend and frontend servers separately. The backend will **proxy** requests to the frontend dev server for seamless integration.
+
+### Backend (Go)
+
+```bash
+go mod download
+cd ./cmd/server
+go run main.go -dev
+```
+
+### Frontend (Svelte)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+After starting both development servers, the application will be available at [http://localhost:8080](http://localhost:8080).
 
 ## License
 
