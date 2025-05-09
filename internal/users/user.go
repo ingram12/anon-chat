@@ -16,11 +16,3 @@ type User struct {
 	IsRegistered     bool
 	ChatID           int // ID of the chat in which the user is currently participating
 }
-
-func (u *User) CalcDifficalty() int {
-	if !u.IsRegistered {
-		return 300
-	}
-
-	return 100
-}
