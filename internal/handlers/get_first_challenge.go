@@ -17,10 +17,7 @@ func GetFirstChallenge(
 ) error {
 	userToken := token.GenerateUserToken()
 
-	globalToken, err := rotatingToken.GetRotatingToken()
-	if err != nil {
-		return err
-	}
+	globalToken := rotatingToken.GetRotatingToken()
 
 	challenge := pow.GenerateFirstChallenge(userToken, globalToken, cfg.TokenSecretKey)
 

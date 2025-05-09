@@ -31,10 +31,7 @@ func SolveFirstChallenge(
 	}
 
 	userToken := req.Token
-	globalToken, err := rotatingToken.GetRotatingToken()
-	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": "global token generation failed"})
-	}
+	globalToken := rotatingToken.GetRotatingToken()
 
 	isVerified := pow.VerifyFirstChallenge(userToken, globalToken, req.Challenge, cfg.TokenSecretKey)
 	if !isVerified {

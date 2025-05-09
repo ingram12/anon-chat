@@ -18,7 +18,7 @@ func NewRotatingToken(lifeTime time.Duration) *RotatingToken {
 	}
 }
 
-func (s *RotatingToken) GetRotatingToken() (string, error) {
+func (s *RotatingToken) GetRotatingToken() string {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -29,5 +29,5 @@ func (s *RotatingToken) GetRotatingToken() (string, error) {
 		s.value = RandomKey()
 	}
 
-	return s.value, nil
+	return s.value
 }
