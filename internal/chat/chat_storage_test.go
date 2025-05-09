@@ -12,10 +12,7 @@ func TestChatStorage(t *testing.T) {
 	const user3 = "user3"
 
 	t.Run("CreateChat", func(t *testing.T) {
-		chat, err := storage.CreateChat(user1, user2)
-		if err != nil {
-			t.Fatalf("Failed to create chat: %v", err)
-		}
+		chat := storage.CreateChat(user1, user2)
 		if chat.ID != 1 {
 			t.Errorf("Expected first chat ID to be 1, got %d", chat.ID)
 		}

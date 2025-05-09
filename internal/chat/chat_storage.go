@@ -22,7 +22,7 @@ func NewChatStorage() *Storage {
 	}
 }
 
-func (s *Storage) CreateChat(userID1, userID2 string) (*Chat, error) {
+func (s *Storage) CreateChat(userID1, userID2 string) *Chat {
 	s.lastID++
 	chat := &Chat{
 		ID:            s.lastID,
@@ -33,7 +33,7 @@ func (s *Storage) CreateChat(userID1, userID2 string) (*Chat, error) {
 		User2Messages: []Message{},
 	}
 	s.chats[chat.ID] = chat
-	return chat, nil
+	return chat
 }
 
 func (s *Storage) GetChat(chatID int) (*Chat, error) {

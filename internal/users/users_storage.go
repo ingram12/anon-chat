@@ -35,11 +35,6 @@ func (s *UserStorage) GetUserLocked(userID string) (User, bool) {
 	return user, exists
 }
 
-func (s *UserStorage) GetUserBytes(userID string) (User, bool) {
-	user, exists := s.users[userID]
-	return user, exists
-}
-
 func (s *UserStorage) IsUserExist(userID string) bool {
 	_, exists := s.GetUser(userID)
 	return exists
