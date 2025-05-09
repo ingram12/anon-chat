@@ -15,6 +15,10 @@ func SendChatMessage(ctx echo.Context, userID string, userStorage *users.UserSto
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
+	if !userStorage.UpdateLastActivityLocked(userID) {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
+	}
+
 	userStorage.Mu.RLock()
 	chatStorage.Mu.Lock()
 	defer chatStorage.Mu.Unlock()

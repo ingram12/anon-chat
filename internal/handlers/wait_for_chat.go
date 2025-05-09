@@ -21,13 +21,12 @@ func WaitForChat(
 	chatStorage *chat.Storage,
 	waitingQueue *users.WaitingQueue,
 ) error {
-	user, exist := userStorage.GetUserLocked(userID)
-	if !exist {
+	if !userStorage.UpdateLastActivityLocked(userID) {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 	}
 
-	waitingQueue.AddUserLocked(user.ID)
-	defer waitingQueue.RemoveUserLocked(user.ID)
+	waitingQueue.AddUserLocked(userID)
+	defer waitingQueue.RemoveUserLocked(userID)
 
 	waitChan := make(chan waitChatResult, 1)
 

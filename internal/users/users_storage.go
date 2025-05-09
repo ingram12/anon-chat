@@ -48,6 +48,18 @@ func (s *UserStorage) UpdateUser(user User) {
 	s.users[user.ID] = user
 }
 
+func (s *UserStorage) UpdateLastActivityLocked(userID string) bool {
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
+	user, exists := s.users[userID]
+	if !exists {
+		return false
+	}
+	user.LastActivity = time.Now()
+	s.users[userID] = user
+	return true
+}
+
 func (s *UserStorage) RemoveInactiveUsers() {
 	timeNow := time.Now()
 	for id, user := range s.users {
