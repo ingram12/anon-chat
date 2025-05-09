@@ -22,7 +22,7 @@
   let cryptoHandler: E2ECryptoHandler;
 
   // Chat data
-  let messages: { text: string; fromPeer: boolean; timestamp: Date }[] = [];
+  let messages: { text: string; type: 'self' | 'peer' | 'system'; timestamp: Date }[] = [];
   let messageInput: string = '';
   let peerNickname: string | null = null;
   let chatUpdateInterval: ReturnType<typeof setInterval>;
@@ -124,7 +124,7 @@
         const response = await updateChat(userId);
 
         if (response?.error === 'User not found') {
-          messages = [{ text: 'Logout :(', fromPeer: true, timestamp: new Date() }, ...messages];
+          messages = [{ text: 'Logout :(', type: 'system', timestamp: new Date() }, ...messages];
           return;
         }
 
@@ -133,7 +133,7 @@
         }
         
         if (response.status === 'closed') {
-          messages = [{ text: 'Your peer live chat :(', fromPeer: true, timestamp: new Date() }, ...messages];
+          messages = [{ text: 'Your peer live chat :(', type: 'system', timestamp: new Date() }, ...messages];
           return;
         }
 
@@ -143,7 +143,7 @@
 
         for (const msg of response.messages) {
           const decrypted = await cryptoHandler.decrypt(msg.message);
-          messages = [{ text: decrypted, fromPeer: true, timestamp: new Date(msg.timestamp) }, ...messages];
+          messages = [{ text: decrypted, type: 'peer', timestamp: new Date(msg.timestamp) }, ...messages];
         }
         if (response.messages.length > 0) {
           scrollToBottom();
@@ -164,7 +164,7 @@
       const encrypted = await cryptoHandler.encrypt(messageInput);
       await sendMessage(userId, encrypted);
       
-      messages = [{ text: messageInput, fromPeer: false, timestamp: new Date() }, ...messages];
+      messages = [{ text: messageInput, type: 'self', timestamp: new Date() }, ...messages];
       messageInput = '';
       scrollToBottom();
     } catch (e) {
@@ -251,8 +251,8 @@
       
       <div class="messages" bind:this={messagesContainer}>
         {#each messages as message}
-          <div class="message {message.fromPeer ? 'peer' : 'self'}">
-            <div class="message-time">{message.timestamp.toLocaleTimeString()} | {message.fromPeer ? 'peer' : 'me'}</div>
+          <div class="message {message.type}">
+            <div class="message-time">{message.timestamp.toLocaleTimeString()} | {message.type}</div>
             <div class="message-content">{message.text}</div>
           </div>
         {/each}
@@ -426,6 +426,11 @@
 
   .message.self {
     background-color: #2b3044;
+    align-self: flex-start;
+  }
+
+  .message.system {
+    background-color: #2e303a;
     align-self: flex-start;
   }
 
