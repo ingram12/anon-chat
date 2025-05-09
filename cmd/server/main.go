@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	dev := flag.Bool("dev", false, "Run in development mode (with frontend proxy)")
+	isDev := flag.Bool("dev", false, "Run in development mode (with frontend proxy)")
 	port := flag.Int("port", 8080, "Port")
 	useHTTPS := flag.Bool("https", false, "Enable HTTPS")
 	flag.Parse()
@@ -48,11 +48,11 @@ func main() {
 		},
 	}))
 
-	configuration := config.NewConfig(*dev)
+	configuration := config.NewConfig(*isDev)
 	server := handlers.NewServer(configuration)
 	api.RegisterHandlers(e, server)
 
-	if *dev {
+	if *isDev {
 		target, _ := url.Parse("http://localhost:5173")
 		proxy := httputil.NewSingleHostReverseProxy(target)
 		e.GET("/*", echo.WrapHandler(proxy))
