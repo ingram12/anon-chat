@@ -15,8 +15,7 @@ An anonymous chat application with **end-to-end encrypted messages** and **Proof
 
 Upon visiting the chat, users are presented with a computational PoW challenge. Successfully solving it grants access to the system and allows the user to search for a chat partner.
 
-The backend does **not use a database**. All data is stored in-memory only. Messages are **encrypted on the client side**, and the server **cannot decrypt** their contents.  
-Once a message is delivered to the recipient, it is **immediately deleted from server memory** and is **not stored or logged** in any form.
+The backend does **not use a database**. All data is stored in-memory only. Messages are **encrypted on the client side**, and the server **cannot decrypt** their contents. Once a message is delivered to the recipient, it is **immediately deleted from server memory** and is **not stored or logged** in any form.
 
 ## Features
 
@@ -35,8 +34,7 @@ Once a message is delivered to the recipient, it is **immediately deleted from s
 
 ## Development Status ⚠️
 
-This project is currently **under active development** and is **not ready for production use**.  
-Expect bugs, missing features, and possible protocol or API changes.
+This project is currently **under active development** and is **not ready for production use**. Expect bugs, missing features, and possible protocol or API changes.
 
 ## Requirements
 
