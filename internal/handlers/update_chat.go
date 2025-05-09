@@ -14,6 +14,7 @@ func UpdateChat(ctx echo.Context, userID string, userStorage *users.UserStorage,
 	userStorage.Mu.RLock()
 	_, exist := userStorage.GetUser(userID)
 	if !exist {
+		userStorage.Mu.RUnlock()
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": "User not found"})
 	}
 	userStorage.Mu.RUnlock()
