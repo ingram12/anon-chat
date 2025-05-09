@@ -14,11 +14,6 @@ func MatchUsers(userStorage *UserStorage, chatStorage *chat.Storage, waitingQueu
 	defer userStorage.Mu.Unlock()
 
 	for {
-		tt := waitingQueue.GetLen()
-		if tt < 2 {
-			return // Not enough users to match
-		}
-
 		userID1, userID2, err := waitingQueue.GetTwoRandomUsers()
 		if err != nil {
 			return // No valid users to match

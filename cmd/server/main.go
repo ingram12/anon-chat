@@ -23,9 +23,7 @@ func main() {
 	flag.Parse()
 
 	e := echo.New()
-
 	e.Use(middleware.BodyLimit("128K"))
-
 	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{Level: 5}))
 
 	// Add route to serve swagger.json
