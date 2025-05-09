@@ -1,16 +1,20 @@
 # Anonymous Chat
 
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/f23fe618-4b71-4d66-98b2-f093dc074115" />
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/5b97783e-16b2-4075-9321-31e09b461502" />
+
 An anonymous chat application with **end-to-end encrypted messages** and **Proof-of-Work (PoW) based protection** against spam and abuse.
 
-- ❌ No cookies  
-- ❌ No IP tracking  
-- ❌ No email or phone required  
+- ❌ No cookies 
+- ❌ No IP tracking 
+- ❌ No email or phone required
 
 ## How It Works
 
 Upon visiting the chat, users are presented with a computational PoW challenge. Successfully solving it grants access to the system and allows the user to search for a chat partner.
 
-The backend does **not use a database**. All data is stored in-memory, messages are encrypted, and immediately deleted after delivery to the recipient.
+The backend does **not use a database**. All data is stored in-memory only. Messages are **encrypted on the client side**, and the server **cannot decrypt** their contents.  
+Once a message is delivered to the recipient, it is **immediately deleted from server memory** and is **not stored or logged** in any form.
 
 ## Features
 
@@ -20,10 +24,16 @@ The backend does **not use a database**. All data is stored in-memory, messages 
 - End-to-end encrypted messages
 - Lightweight and privacy-focused
 
+## Development Status ⚠️
+
+This project is currently **under active development** and is **not ready for production use**.  
+Expect bugs, missing features, and possible protocol or API changes.
+
 ## Requirements
 
 - Go 1.24 or newer
-- Node.js and npm
+- Node.js 22 or newer
+- npm 11 or newer
 
 ## Installation
 
@@ -36,4 +46,8 @@ cd ./build
 ```
 
 The application will be available at http://localhost:8080.
+
+## License
+
+MIT © 2025 ingram12
 
