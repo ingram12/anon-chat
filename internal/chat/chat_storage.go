@@ -124,6 +124,12 @@ func (s *Storage) QuitChat(chatID int, userID string) error {
 	return nil
 }
 
+func (s *Storage) QuitChatLocked(chatID int, userID string) error {
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
+	return s.QuitChat(chatID, userID)
+}
+
 func (s *Storage) IsUserInChat(chatID int, userID string) bool {
 	chat, exists := s.chats[chatID]
 	if !exists {
@@ -140,4 +146,15 @@ func (s *Storage) IsActiveChat(chatID int) bool {
 	}
 
 	return chat.IsActive()
+}
+
+func (s *Storage) RemoveInactiveChatsLocked() {
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
+
+	for id, chat := range s.chats {
+		if chat.UserID1 == "" && chat.UserID2 == "" {
+			delete(s.chats, id)
+		}
+	}
 }

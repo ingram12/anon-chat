@@ -36,11 +36,11 @@ func MatchUsers(userStorage *UserStorage, chatStorage *chat.Storage, waitingQueu
 
 		user1.ChatID = chat.ID
 		user1.LastActivity = timeNow
-		userStorage.users[user1.ID] = user1
+		userStorage.Users[user1.ID] = user1
 
 		user2.ChatID = chat.ID
 		user2.LastActivity = timeNow
-		userStorage.users[user2.ID] = user2
+		userStorage.Users[user2.ID] = user2
 
 		waitingQueue.RemoveUser(userID1)
 		waitingQueue.RemoveUser(userID2)
