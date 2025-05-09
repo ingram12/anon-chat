@@ -23,7 +23,7 @@ func TestNewConfig(t *testing.T) {
 				TokenSecretKey:           "DEFAULT-SECRET-KEY-ALARMfgsjffsr",
 				FirstChallengeDifficulty: 1,
 				RotatingTokenLifeTime:    180 * time.Second,
-				UserInactivityTimeout:    1800 * time.Second,
+				UserInactivityTimeout:    180 * time.Second,
 			},
 		},
 		{
@@ -34,7 +34,7 @@ func TestNewConfig(t *testing.T) {
 				TokenSecretKey:           "custom-secret-key",
 				FirstChallengeDifficulty: 1,
 				RotatingTokenLifeTime:    180 * time.Second,
-				UserInactivityTimeout:    1800 * time.Second,
+				UserInactivityTimeout:    180 * time.Second,
 			},
 		},
 		{
@@ -43,7 +43,7 @@ func TestNewConfig(t *testing.T) {
 			want: &Config{
 				FirstChallengeDifficulty: 9999,
 				RotatingTokenLifeTime:    180 * time.Second,
-				UserInactivityTimeout:    1800 * time.Second,
+				UserInactivityTimeout:    180 * time.Second,
 			},
 		},
 	}

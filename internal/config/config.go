@@ -33,6 +33,6 @@ func NewConfig(isdev bool) *Config {
 		TokenSecretKey:           secretKey,
 		FirstChallengeDifficulty: firstChallengeDifficulty,
 		RotatingTokenLifeTime:    180 * time.Second,
-		UserInactivityTimeout:    1800 * time.Second,
+		UserInactivityTimeout:    180 * time.Second,
 	}
 }
