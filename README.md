@@ -3,6 +3,14 @@
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/f23fe618-4b71-4d66-98b2-f093dc074115" />
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/5b97783e-16b2-4075-9321-31e09b461502" />
 
+### 🔗 Live Preview
+
+You can try the **preview version** of the chat at <a href="https://anon-chat.top" target="_blank" rel="noopener noreferrer">https://anon-chat.top</a>
+
+> ⚠️ This is a **preview instance** for demonstration purposes. It's not production-ready and may be reset or unavailable at any time.
+
+## Overview
+
 An anonymous chat application with **end-to-end encrypted messages** and **Proof-of-Work (PoW) based protection** against spam and abuse.
 
 - ❌ No cookies  
