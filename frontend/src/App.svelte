@@ -228,6 +228,7 @@
             id="nickname"
             bind:value={nickname}
             placeholder="Enter a nickname"
+            maxlength="20"
             required
           />
         </div>
