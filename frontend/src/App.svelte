@@ -25,8 +25,8 @@
   let messages: { text: string; type: 'self' | 'peer' | 'system'; timestamp: Date }[] = [];
   let messageInput: string = '';
   let peerNickname: string | null = null;
-  let chatUpdateInterval: ReturnType<typeof setInterval>;
   let messagesContainer: HTMLDivElement;
+  let isSending: boolean = false;
 
   function scrollToBottom() {
     if (messagesContainer) {
@@ -158,18 +158,20 @@
   }
 
   async function sendChatMessage() {
-    if (!messageInput.trim()) return;
-
+    if (!messageInput.trim() || isSending) return;
+    isSending = true;
+    const trimmedMessage = messageInput.trim();
+    messageInput = '';
     try {
-      const encrypted = await cryptoHandler.encrypt(messageInput);
+      const encrypted = await cryptoHandler.encrypt(trimmedMessage);
       await sendMessage(userId, encrypted);
       
-      messages = [{ text: messageInput, type: 'self', timestamp: new Date() }, ...messages];
-      messageInput = '';
+      messages = [{ text: trimmedMessage, type: 'self', timestamp: new Date() }, ...messages];
       scrollToBottom();
     } catch (e) {
       error = `Failed to send message: ${e instanceof Error ? e.message : String(e)}`;
     }
+    isSending = false;
   }
 
   async function handleQuit() {
@@ -265,8 +267,9 @@
           on:keypress={handleKeyPress}
           placeholder="Type a message..."
           rows="2"
+          maxlength="300"
         ></textarea>
-        <button on:click={sendChatMessage}>Send</button>
+        <button on:click={sendChatMessage} disabled={messageInput.trim() == "" || isSending}>Send</button>
       </div>
     </div>
   {:else if state === 'disconnected'}
@@ -418,6 +421,8 @@
     padding: 0.4rem;
     border-radius: 4px;
     position: relative;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   .message.peer {
